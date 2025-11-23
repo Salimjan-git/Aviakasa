@@ -1,11 +1,396 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <h1>Hello shahriyor</h1>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}
+AviaKasa - Поиск авиабилетов
+{% endblock %}
+
+{% block main %}
+<div class="hero-section">
+    <div class="hero-content">
+        <h1 class="hero-title">Найдите идеальный полёт</h1>
+        <p class="hero-subtitle">Сравните цены от ведущих авиакомпаний и найдите лучшие предложения</p>
+        
+        <div class="search-form">
+            <div class="form-tabs">
+                <button class="tab active">В одну сторону</button>
+                <button class="tab">Туда и обратно</button>
+                <button class="tab">Сложный маршрут</button>
+            </div>
+            
+            <div class="form-content">
+                <div class="input-group">
+                    <div class="input-field">
+                        <label>Откуда</label>
+                        <input type="text" placeholder="Город или аэропорт вылета">
+                    </div>
+                    <div class="input-field">
+                        <label>Куда</label>
+                        <input type="text" placeholder="Город или аэропорт прилёта">
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <div class="input-field">
+                        <label>Туда</label>
+                        <input type="date" value="{{ today }}">
+                    </div>
+                    <div class="input-field">
+                        <label>Обратно</label>
+                        <input type="date">
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <div class="input-field">
+                        <label>Пассажиры</label>
+                        <select>
+                            <option>1 пассажир</option>
+                            <option>2 пассажира</option>
+                            <option>3 пассажира</option>
+                            <option>4 пассажира</option>
+                        </select>
+                    </div>
+                    <div class="input-field">
+                        <label>Класс</label>
+                        <select>
+                            <option>Эконом</option>
+                            <option>Премиум-эконом</option>
+                            <option>Бизнес</option>
+                            <option>Первый</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button class="search-btn">
+                    <span>Найти билеты</span>
+                    <span class="icon">✈️</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="features-section">
+    <div class="container">
+        <h2 class="section-title">Почему выбирают AviaKasa?</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">💰</div>
+                <h3>Лучшие цены</h3>
+                <p>Гарантируем самые выгодные предложения от 800+ авиакомпаний</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Мгновенное бронирование</h3>
+                <p>Быстрое подтверждение бронирования без скрытых платежей</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🛡️</div>
+                <h3>Безопасность</h3>
+                <p>Защищённые платежи и гарантия возврата средств</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🌍</div>
+                <h3>По всему миру</h3>
+                <p>Билеты в более чем 150 стран мира</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="popular-routes">
+    <div class="container">
+        <h2 class="section-title">Популярные направления</h2>
+        <div class="routes-grid">
+            <div class="route-card">
+                <div class="route-image" style="background-image: url('https://images.unsplash.com/photo-1523531294919-4bcd7c65e216?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80')"></div>
+                <div class="route-info">
+                    <h3>Москва → Сочи</h3>
+                    <p class="route-price">от 4 500 ₽</p>
+                    <span class="route-duration">2ч 30м</span>
+                </div>
+            </div>
+            <div class="route-card">
+                <div class="route-image" style="background-image: url('https://images.unsplash.com/photo-1502602898536-47ad22581b52?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80')"></div>
+                <div class="route-info">
+                    <h3>Санкт-Петербург → Париж</h3>
+                    <p class="route-price">от 12 800 ₽</p>
+                    <span class="route-duration">3ч 45м</span>
+                </div>
+            </div>
+            <div class="route-card">
+                <div class="route-image" style="background-image: url('https://images.unsplash.com/photo-1539667547527-06b6eecbd403?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80')"></div>
+                <div class="route-info">
+                    <h3>Екатеринбург → Стамбул</h3>
+                    <p class="route-price">от 8 900 ₽</p>
+                    <span class="route-duration">4ч 10м</span>
+                </div>
+            </div>
+            <div class="route-card">
+                <div class="route-image" style="background-image: url('https://images.unsplash.com/photo-1480796927426-f609979314bd?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80')"></div>
+                <div class="route-info">
+                    <h3>Новосибирск → Бангкок</h3>
+                    <p class="route-price">от 15 200 ₽</p>
+                    <span class="route-duration">6ч 30м</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, rgba(30, 60, 114, 0.9) 0%, rgba(42, 82, 152, 0.8) 100%), 
+                    url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80');
+        background-size: cover;
+        background-position: center;
+        color: white;
+        padding: 4rem 2rem;
+        min-height: 70vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .hero-content {
+        max-width: 800px;
+        width: 100%;
+    }
+
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .hero-subtitle {
+        font-size: 1.3rem;
+        margin-bottom: 3rem;
+        opacity: 0.9;
+    }
+
+    .search-form {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(10px);
+    }
+
+    .form-tabs {
+        display: flex;
+        margin-bottom: 2rem;
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 0.5rem;
+    }
+
+    .tab {
+        flex: 1;
+        padding: 1rem;
+        border: none;
+        background: transparent;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .tab.active {
+        background: white;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        color: #1e3c72;
+    }
+
+    .input-group {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .input-field {
+        text-align: left;
+    }
+
+    .input-field label {
+        display: block;
+        color: #333;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .input-field input, .input-field select {
+        width: 100%;
+        padding: 1rem;
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+    }
+
+    .input-field input:focus, .input-field select:focus {
+        outline: none;
+        border-color: #1e3c72;
+    }
+
+    .search-btn {
+        background: linear-gradient(135deg, #1e3c72, #2a5298);
+        color: white;
+        border: none;
+        padding: 1.2rem 3rem;
+        border-radius: 12px;
+        font-size: 1.2rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        margin: 2rem auto 0;
+        width: 100%;
+        max-width: 300px;
+    }
+
+    .search-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(30, 60, 114, 0.4);
+    }
+
+    .features-section {
+        padding: 5rem 2rem;
+        background: #f8f9fa;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .section-title {
+        text-align: center;
+        font-size: 2.5rem;
+        color: #1e3c72;
+        margin-bottom: 3rem;
+        font-weight: 700;
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+    }
+
+    .feature-card {
+        background: white;
+        padding: 2.5rem 2rem;
+        border-radius: 15px;
+        text-align: center;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-10px);
+    }
+
+    .feature-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    .feature-card h3 {
+        color: #1e3c72;
+        margin-bottom: 1rem;
+        font-size: 1.3rem;
+    }
+
+    .feature-card p {
+        color: #666;
+        line-height: 1.6;
+    }
+
+    .popular-routes {
+        padding: 5rem 2rem;
+    }
+
+    .routes-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+    }
+
+    .route-card {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+        cursor: pointer;
+    }
+
+    .route-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .route-image {
+        height: 200px;
+        background-size: cover;
+        background-position: center;
+    }
+
+    .route-info {
+        padding: 1.5rem;
+    }
+
+    .route-info h3 {
+        color: #1e3c72;
+        margin-bottom: 0.5rem;
+        font-size: 1.2rem;
+    }
+
+    .route-price {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #28a745;
+        margin-bottom: 0.5rem;
+    }
+
+    .route-duration {
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 2.5rem;
+        }
+        
+        .input-group {
+            grid-template-columns: 1fr;
+        }
+        
+        .form-tabs {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const today = new Date().toISOString().split('T')[0];
+        document.querySelector('input[type="date"]').value = today;
+        
+        const tabs = document.querySelectorAll('.tab');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                tabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    });
+</script>
+{% endblock %}
