@@ -5,7 +5,8 @@ from django.contrib.auth.models import User
 
 def home(request):
     if request.user.is_authenticated:
-        return render(request, 'home.html')
+        flights = Flights.objects.all()
+        return render(request, 'home.html', context={"flights": flights})
     else:
         return redirect('login')
     

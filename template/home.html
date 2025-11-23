@@ -97,46 +97,41 @@ AviaKasa - Поиск авиабилетов
         </div>
     </div>
 </div>
-
 <div class="popular-routes">
     <div class="container">
-        <h2 class="section-title">Популярные направления</h2>
+        <h2 style="color: white;" class="section-title">Популярные направления</h2>
+
         <div class="routes-grid">
+
+            {% for flight in flights %}
             <div class="route-card">
-                <div class="route-image" style="background-image: url('https://images.unsplash.com/photo-1523531294919-4bcd7c65e216?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80')"></div>
+
+                <div class="route-image" 
+                     style="background-image: url('{{ flight.airline_id.logo.url }}')">
+                </div>
+
                 <div class="route-info">
-                    <h3>Москва → Сочи</h3>
-                    <p class="route-price">от 4 500 ₽</p>
-                    <span class="route-duration">2ч 30м</span>
+
+                    <h3>{{ flight.departure_airport.city }} → {{ flight.arrival_airport.city }}</h3>
+
+                    <p class="route-price">от {{ flight.base_price }} ₽</p>
+
+                    <span class="route-duration">
+                        {{ flight.airline_id.name }} • {{ flight.aircraft_id.model_plane }}
+                    </span>
+
+                    <a href="#" class="route-btn">
+                        Подробнее
+                    </a>
+
                 </div>
             </div>
-            <div class="route-card">
-                <div class="route-image" style="background-image: url('https://images.unsplash.com/photo-1502602898536-47ad22581b52?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80')"></div>
-                <div class="route-info">
-                    <h3>Санкт-Петербург → Париж</h3>
-                    <p class="route-price">от 12 800 ₽</p>
-                    <span class="route-duration">3ч 45м</span>
-                </div>
-            </div>
-            <div class="route-card">
-                <div class="route-image" style="background-image: url('https://images.unsplash.com/photo-1539667547527-06b6eecbd403?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80')"></div>
-                <div class="route-info">
-                    <h3>Екатеринбург → Стамбул</h3>
-                    <p class="route-price">от 8 900 ₽</p>
-                    <span class="route-duration">4ч 10м</span>
-                </div>
-            </div>
-            <div class="route-card">
-                <div class="route-image" style="background-image: url('https://images.unsplash.com/photo-1480796927426-f609979314bd?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80')"></div>
-                <div class="route-info">
-                    <h3>Новосибирск → Бангкок</h3>
-                    <p class="route-price">от 15 200 ₽</p>
-                    <span class="route-duration">6ч 30м</span>
-                </div>
-            </div>
+            {% endfor %}
+
         </div>
     </div>
 </div>
+
 
 <style>
     .hero-section {
