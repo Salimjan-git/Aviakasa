@@ -9,63 +9,74 @@ AviaKasa - Поиск авиабилетов
     <div class="hero-content">
         <h1 class="hero-title">Найдите идеальный полёт</h1>
         <p class="hero-subtitle">Сравните цены от ведущих авиакомпаний и найдите лучшие предложения</p>
-        
+
         <div class="search-form">
             <div class="form-tabs">
-                <button class="tab active">В одну сторону</button>
-                <button class="tab">Туда и обратно</button>
-                <button class="tab">Сложный маршрут</button>
+                <button class="tab active" data-tab="one-way">В одну сторону</button>
+                <button class="tab" data-tab="round-trip">Туда и обратно</button>
+                <button class="tab" data-tab="multi-city">Сложный маршрут</button>
             </div>
             
-            <div class="form-content">
+            <form method="post" action="{% url 'search_flights' %}" class="form-content" id="search-form">
+                {% csrf_token %}
                 <div class="input-group">
                     <div class="input-field">
                         <label>Откуда</label>
-                        <input type="text" placeholder="Город или аэропорт вылета">
+                        <input type="text" name="departure" placeholder="Город или аэропорт вылета" required id="departure-input">
+                        <div class="suggestions" id="departure-suggestions"></div>
                     </div>
                     <div class="input-field">
                         <label>Куда</label>
-                        <input type="text" placeholder="Город или аэропорт прилёта">
+                        <input type="text" name="arrival" placeholder="Город или аэропорт прилёта" required id="arrival-input">
+                        <div class="suggestions" id="arrival-suggestions"></div>
                     </div>
                 </div>
                 
                 <div class="input-group">
                     <div class="input-field">
-                        <label>Туда</label>
-                        <input type="date" value="{{ today }}">
+                        <label>Дата вылета</label>
+                        <input type="date" name="date" value="{{ today }}" required id="departure-date">
                     </div>
-                    <div class="input-field">
-                        <label>Обратно</label>
-                        <input type="date">
+                    <div class="input-field" id="return-field" style="display: none;">
+                        <label>Дата обратно</label>
+                        <input type="date" name="return_date" id="return-date">
                     </div>
                 </div>
                 
                 <div class="input-group">
                     <div class="input-field">
                         <label>Пассажиры</label>
-                        <select>
-                            <option>1 пассажир</option>
-                            <option>2 пассажира</option>
-                            <option>3 пассажира</option>
-                            <option>4 пассажира</option>
-                        </select>
+                        <div class="passenger-selector">
+                            <button type="button" class="passenger-btn" data-type="decrease">-</button>
+                            <span class="passenger-count">1</span>
+                            <button type="button" class="passenger-btn" data-type="increase">+</button>
+                            <input type="hidden" name="passengers" value="1" id="passengers-input">
+                        </div>
                     </div>
                     <div class="input-field">
                         <label>Класс</label>
-                        <select>
-                            <option>Эконом</option>
-                            <option>Премиум-эконом</option>
-                            <option>Бизнес</option>
-                            <option>Первый</option>
+                        <select name="class" id="class-select">
+                            <option value="economy">Эконом</option>
+                            <option value="premium">Премиум-эконом</option>
+                            <option value="business">Бизнес</option>
+                            <option value="first">Первый</option>
                         </select>
                     </div>
                 </div>
                 
-                <button class="search-btn">
+                <button type="submit" class="search-btn">
                     <span>Найти билеты</span>
                     <span class="icon">✈️</span>
                 </button>
-            </div>
+            </form>
+        </div>
+
+        <div class="quick-actions">
+            <a href="{% url 'advanced_search' %}" class="quick-btn">Расширенный поиск</a>
+            <a href="{% url 'cheapest_flights' %}" class="quick-btn">Самые дешёвые рейсы</a>
+            <a href="{% url 'flight_status' %}" class="quick-btn">Статус рейса</a>
+            <a href="{% url 'flight_schedule' %}" class="quick-btn">Расписание</a>
+            <a href="{% url 'search_airports' %}" class="quick-btn">Поиск аэропортов</a>
         </div>
     </div>
 </div>
@@ -102,51 +113,163 @@ AviaKasa - Поиск авиабилетов
     <div class="container">
         <h2 class="section-title">Популярные направления</h2>
         <div class="routes-grid">
-            <div class="route-card">
-                <div class="route-image" style="background-image: url('https://images.unsplash.com/photo-1523531294919-4bcd7c65e216?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80')"></div>
+            {% for flight in popular_flights %}
+            <div class="route-card" onclick="location.href='{% url 'flight_detail' flight.id %}'">
+                <div class="route-image"></div>
                 <div class="route-info">
-                    <h3>Москва → Сочи</h3>
-                    <p class="route-price">от 4 500 ₽</p>
-                    <span class="route-duration">2ч 30м</span>
+                    <h3>{{ flight.departure_airport.city }} → {{ flight.arrival_airport.city }}</h3>
+                    <p class="route-price">от {{ flight.base_price }} ₽</p>
+                    <span class="route-duration">Рейс {{ flight.flight_number }}</span>
+                    <div class="route-actions">
+                        <a href="{% url 'flight_detail' flight.id %}" class="route-btn">Подробнее</a>
+                        <a href="{% url 'book_flight' flight.id %}" class="route-btn primary">Забронировать</a>
+                    </div>
                 </div>
             </div>
-            <div class="route-card">
-                <div class="route-image" style="background-image: url('https://images.unsplash.com/photo-1502602898536-47ad22581b52?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80')"></div>
-                <div class="route-info">
-                    <h3>Санкт-Петербург → Париж</h3>
-                    <p class="route-price">от 12 800 ₽</p>
-                    <span class="route-duration">3ч 45м</span>
+            {% empty %}
+            <div class="no-flights">
+                <p>Популярные рейсы не найдены</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div class="user-section">
+    <div class="container">
+        <h2 class="section-title">Личный кабинет</h2>
+        <div class="user-grid">
+            {% if user.is_authenticated %}
+            <div class="user-card">
+                <h3>Добро пожаловать, {{ user.username }}!</h3>
+                <div class="user-stats">
+                    <div class="stat">
+                        <span class="stat-number">{{ user_bookings }}</span>
+                        <span class="stat-label">Бронирований</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">{{ user_tickets }}</span>
+                        <span class="stat-label">Билетов</span>
+                    </div>
+                </div>
+                <div class="user-actions">
+                    <a href="{% url 'my_bookings' %}" class="user-btn">Мои бронирования</a>
+                    <a href="{% url 'user_dashboard' %}" class="user-btn">Дашборд</a>
+                    <a href="{% url 'user_profile' %}" class="user-btn">Профиль</a>
                 </div>
             </div>
-            <div class="route-card">
-                <div class="route-image" style="background-image: url('https://images.unsplash.com/photo-1539667547527-06b6eecbd403?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80')"></div>
-                <div class="route-info">
-                    <h3>Екатеринбург → Стамбул</h3>
-                    <p class="route-price">от 8 900 ₽</p>
-                    <span class="route-duration">4ч 10м</span>
+            {% else %}
+            <div class="user-card">
+                <h3>Войдите в систему</h3>
+                <p>Чтобы получить доступ ко всем функциям</p>
+                <div class="user-actions">
+                    <a href="/admin/login/" class="user-btn primary">Войти</a>
+                    <a href="/admin/login/" class="user-btn">Регистрация</a>
                 </div>
             </div>
-            <div class="route-card">
-                <div class="route-image" style="background-image: url('https://images.unsplash.com/photo-1480796927426-f609979314bd?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80')"></div>
-                <div class="route-info">
-                    <h3>Новосибирск → Бангкок</h3>
-                    <p class="route-price">от 15 200 ₽</p>
-                    <span class="route-duration">6ч 30м</span>
+            {% endif %}
+
+            <div class="admin-card">
+                <h3>Для администраторов</h3>
+                {% if user.is_staff %}
+                <div class="admin-actions">
+                    <a href="{% url 'admin_dashboard' %}" class="admin-btn">Админ панель</a>
+                    <a href="{% url 'admin_flight_search' %}" class="admin-btn">Управление рейсами</a>
+                    <a href="{% url 'admin_booking_search' %}" class="admin-btn">Бронирования</a>
+                    <a href="{% url 'admin_revenue_analysis' %}" class="admin-btn">Отчёты</a>
+                </div>
+                {% else %}
+                <p>Требуются права администратора</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="tools-section">
+    <div class="container">
+        <h2 class="section-title">Полезные инструменты</h2>
+        <div class="tools-grid">
+            <div class="tool-card">
+                <h3>🔍 Поиск аэропортов</h3>
+                <form method="get" action="{% url 'search_airports' %}" class="tool-form">
+                    <input type="text" name="q" placeholder="Название аэропорта или города">
+                    <button type="submit">Найти</button>
+                </form>
+            </div>
+            
+            <div class="tool-card">
+                <h3>💰 Сравнение цен</h3>
+                <p>Найдите самые дешёвые рейсы по вашему маршруту</p>
+                <a href="{% url 'cheapest_flights' %}" class="tool-btn">Сравнить цены</a>
+            </div>
+            
+            <div class="tool-card">
+                <h3>📊 Статистика системы</h3>
+                <div class="stats">
+                    <div class="stat-item">
+                        <span>Всего рейсов:</span>
+                        <strong>{{ total_flights }}</strong>
+                    </div>
+                    <div class="stat-item">
+                        <span>Авиакомпаний:</span>
+                        <strong>{{ total_airlines }}</strong>
+                    </div>
+                    <div class="stat-item">
+                        <span>Аэропортов:</span>
+                        <strong>{{ total_airports }}</strong>
+                    </div>
                 </div>
             </div>
+
+            <div class="tool-card">
+                <h3>✈️ Статус рейса</h3>
+                <form method="get" action="{% url 'flight_status' %}" class="tool-form">
+                    <input type="text" name="flight_number" placeholder="Номер рейса">
+                    <button type="submit">Проверить</button>
+                </form>
+            </div>
+
+            <div class="tool-card">
+                <h3>📅 Расписание</h3>
+                <p>Посмотрите расписание всех рейсов</p>
+                <a href="{% url 'flight_schedule' %}" class="tool-btn">Открыть расписание</a>
+            </div>
+
+            <div class="tool-card">
+                <h3>🔎 Расширенный поиск</h3>
+                <p>Расширенные фильтры для точного поиска</p>
+                <a href="{% url 'advanced_search' %}" class="tool-btn">Расширенный поиск</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="airlines-section">
+    <div class="container">
+        <h2 class="section-title">Наши авиакомпании</h2>
+        <div class="airlines-grid">
+            {% for airline in airlines %}
+            <div class="airline-card">
+                <h4>{{ airline.name }}</h4>
+                <p>Код: {{ airline.code }}</p>
+                <a href="{% url 'airline_flights' airline.id %}" class="airline-btn">Рейсы</a>
+            </div>
+            {% empty %}
+            <div class="no-airlines">
+                <p>Авиакомпании не найдены</p>
+            </div>
+            {% endfor %}
         </div>
     </div>
 </div>
 
 <style>
     .hero-section {
-        background: linear-gradient(135deg, rgba(30, 60, 114, 0.9) 0%, rgba(42, 82, 152, 0.8) 100%), 
-                    url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80');
-        background-size: cover;
-        background-position: center;
+        background: linear-gradient(135deg, rgba(30, 60, 114, 0.9) 0%, rgba(42, 82, 152, 0.8) 100%);
         color: white;
         padding: 4rem 2rem;
-        min-height: 70vh;
+        min-height: 80vh;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -154,7 +277,7 @@ AviaKasa - Поиск авиабилетов
     }
 
     .hero-content {
-        max-width: 800px;
+        max-width: 900px;
         width: 100%;
     }
 
@@ -162,7 +285,6 @@ AviaKasa - Поиск авиабилетов
         font-size: 3.5rem;
         font-weight: 700;
         margin-bottom: 1rem;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
     }
 
     .hero-subtitle {
@@ -176,7 +298,8 @@ AviaKasa - Поиск авиабилетов
         border-radius: 20px;
         padding: 2rem;
         box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-        backdrop-filter: blur(10px);
+        margin-bottom: 2rem;
+        position: relative;
     }
 
     .form-tabs {
@@ -213,6 +336,7 @@ AviaKasa - Поиск авиабилетов
 
     .input-field {
         text-align: left;
+        position: relative;
     }
 
     .input-field label {
@@ -234,6 +358,66 @@ AviaKasa - Поиск авиабилетов
     .input-field input:focus, .input-field select:focus {
         outline: none;
         border-color: #1e3c72;
+    }
+
+    .suggestions {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        max-height: 200px;
+        overflow-y: auto;
+        display: none;
+        z-index: 1000;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .suggestion-item {
+        padding: 0.8rem 1rem;
+        cursor: pointer;
+        border-bottom: 1px solid #f8f9fa;
+        transition: background-color 0.2s ease;
+    }
+
+    .suggestion-item:hover {
+        background-color: #f8f9fa;
+    }
+
+    .suggestion-item:last-child {
+        border-bottom: none;
+    }
+
+    .passenger-selector {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        background: #f8f9fa;
+        padding: 0.8rem;
+        border-radius: 8px;
+        border: 2px solid #e9ecef;
+    }
+
+    .passenger-btn {
+        background: #1e3c72;
+        color: white;
+        border: none;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+    }
+
+    .passenger-count {
+        font-weight: 600;
+        min-width: 20px;
+        text-align: center;
     }
 
     .search-btn {
@@ -258,6 +442,29 @@ AviaKasa - Поиск авиабилетов
     .search-btn:hover {
         transform: translateY(-3px);
         box-shadow: 0 10px 25px rgba(30, 60, 114, 0.4);
+    }
+
+    .quick-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .quick-btn {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 0.8rem 1.5rem;
+        border-radius: 25px;
+        text-decoration: none;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+    }
+
+    .quick-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
     }
 
     .features-section {
@@ -337,9 +544,8 @@ AviaKasa - Поиск авиабилетов
     }
 
     .route-image {
-        height: 200px;
-        background-size: cover;
-        background-position: center;
+        height: 150px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
     }
 
     .route-info {
@@ -362,6 +568,231 @@ AviaKasa - Поиск авиабилетов
     .route-duration {
         color: #666;
         font-size: 0.9rem;
+        display: block;
+        margin-bottom: 1rem;
+    }
+
+    .route-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .route-btn {
+        flex: 1;
+        background: #f8f9fa;
+        color: #1e3c72;
+        padding: 0.5rem;
+        border-radius: 6px;
+        text-decoration: none;
+        text-align: center;
+        border: 1px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+
+    .route-btn.primary {
+        background: #1e3c72;
+        color: white;
+    }
+
+    .route-btn:hover {
+        background: #1e3c72;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .user-section {
+        padding: 5rem 2rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .user-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+    }
+
+    .user-card, .admin-card {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 2rem;
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .user-stats {
+        display: flex;
+        gap: 2rem;
+        margin: 1.5rem 0;
+    }
+
+    .stat {
+        text-align: center;
+    }
+
+    .stat-number {
+        display: block;
+        font-size: 2rem;
+        font-weight: bold;
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+        opacity: 0.8;
+    }
+
+    .user-actions, .admin-actions {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .user-btn, .admin-btn {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 0.7rem 1.2rem;
+        border-radius: 8px;
+        text-decoration: none;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    .user-btn.primary, .admin-btn.primary {
+        background: rgba(255, 255, 255, 0.3);
+        font-weight: 600;
+    }
+
+    .user-btn:hover, .admin-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
+    }
+
+    .tools-section {
+        padding: 5rem 2rem;
+        background: #f8f9fa;
+    }
+
+    .tools-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+
+    .tool-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .tool-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .tool-form {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+
+    .tool-form input {
+        flex: 1;
+        padding: 0.7rem;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        transition: border-color 0.3s ease;
+    }
+
+    .tool-form input:focus {
+        outline: none;
+        border-color: #1e3c72;
+    }
+
+    .tool-form button {
+        background: #1e3c72;
+        color: white;
+        border: none;
+        padding: 0.7rem 1.2rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .tool-form button:hover {
+        background: #2a5298;
+    }
+
+    .tool-btn {
+        display: inline-block;
+        background: #1e3c72;
+        color: white;
+        padding: 0.7rem 1.5rem;
+        border-radius: 8px;
+        text-decoration: none;
+        margin-top: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .tool-btn:hover {
+        background: #2a5298;
+        transform: translateY(-2px);
+    }
+
+    .stats {
+        margin-top: 1rem;
+    }
+
+    .stat-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .airlines-section {
+        padding: 5rem 2rem;
+    }
+
+    .airlines-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .airline-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        text-align: center;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .airline-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .airline-btn {
+        display: inline-block;
+        background: #1e3c72;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        text-decoration: none;
+        margin-top: 0.5rem;
+        transition: background-color 0.3s ease;
+    }
+
+    .airline-btn:hover {
+        background: #2a5298;
+    }
+
+    .no-flights, .no-airlines {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 2rem;
+        color: #666;
     }
 
     @media (max-width: 768px) {
@@ -376,19 +807,165 @@ AviaKasa - Поиск авиабилетов
         .form-tabs {
             flex-direction: column;
         }
+        
+        .user-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .quick-actions {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .user-actions, .admin-actions {
+            flex-direction: column;
+        }
+        
+        .route-actions {
+            flex-direction: column;
+        }
     }
 </style>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Установка сегодняшней даты
         const today = new Date().toISOString().split('T')[0];
-        document.querySelector('input[type="date"]').value = today;
+        document.getElementById('departure-date').value = today;
         
+        // Переключение табов
         const tabs = document.querySelectorAll('.tab');
+        const returnField = document.getElementById('return-field');
+        
         tabs.forEach(tab => {
             tab.addEventListener('click', function() {
                 tabs.forEach(t => t.classList.remove('active'));
                 this.classList.add('active');
+                
+                // Показ/скрытие поля обратной даты
+                if (this.dataset.tab === 'round-trip') {
+                    returnField.style.display = 'block';
+                } else {
+                    returnField.style.display = 'none';
+                }
+            });
+        });
+
+        // Счетчик пассажиров
+        const passengerCount = document.querySelector('.passenger-count');
+        const passengersInput = document.getElementById('passengers-input');
+        const passengerButtons = document.querySelectorAll('.passenger-btn');
+
+        passengerButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                let count = parseInt(passengerCount.textContent);
+                
+                if (this.dataset.type === 'increase' && count < 9) {
+                    count++;
+                } else if (this.dataset.type === 'decrease' && count > 1) {
+                    count--;
+                }
+                
+                passengerCount.textContent = count;
+                passengersInput.value = count;
+            });
+        });
+
+        // Автодополнение для городов (упрощенная версия)
+        const departureInput = document.getElementById('departure-input');
+        const arrivalInput = document.getElementById('arrival-input');
+        const departureSuggestions = document.getElementById('departure-suggestions');
+        const arrivalSuggestions = document.getElementById('arrival-suggestions');
+
+        const popularCities = [
+            'Москва', 'Санкт-Петербург', 'Сочи', 'Екатеринбург', 
+            'Новосибирск', 'Казань', 'Краснодар', 'Владивосток',
+            'Париж', 'Лондон', 'Стамбул', 'Дубай', 'Бангкок', 'Токио'
+        ];
+
+        function showSuggestions(input, suggestionsContainer, cities) {
+            const value = input.value.toLowerCase();
+            if (value.length < 2) {
+                suggestionsContainer.style.display = 'none';
+                return;
+            }
+
+            const filteredCities = cities.filter(city => 
+                city.toLowerCase().includes(value)
+            );
+
+            if (filteredCities.length > 0) {
+                suggestionsContainer.innerHTML = filteredCities
+                    .map(city => `<div class="suggestion-item">${city}</div>`)
+                    .join('');
+                suggestionsContainer.style.display = 'block';
+            } else {
+                suggestionsContainer.style.display = 'none';
+            }
+        }
+
+        function setupAutocomplete(input, suggestionsContainer) {
+            input.addEventListener('input', () => {
+                showSuggestions(input, suggestionsContainer, popularCities);
+            });
+
+            input.addEventListener('focus', () => {
+                if (input.value.length >= 2) {
+                    showSuggestions(input, suggestionsContainer, popularCities);
+                }
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!input.contains(e.target) && !suggestionsContainer.contains(e.target)) {
+                    suggestionsContainer.style.display = 'none';
+                }
+            });
+
+            suggestionsContainer.addEventListener('click', (e) => {
+                if (e.target.classList.contains('suggestion-item')) {
+                    input.value = e.target.textContent;
+                    suggestionsContainer.style.display = 'none';
+                }
+            });
+        }
+
+        setupAutocomplete(departureInput, departureSuggestions);
+        setupAutocomplete(arrivalInput, arrivalSuggestions);
+
+        // Анимация появления элементов при скролле
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Применяем анимацию к карточкам
+        document.querySelectorAll('.feature-card, .route-card, .tool-card, .airline-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(card);
+        });
+
+        // Плавная прокрутка для якорей
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
             });
         });
     });

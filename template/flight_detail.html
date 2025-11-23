@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Flight Details</title>
+</head>
+<body>
+
+<h2>Маълумоти рейс</h2>
+
+<p><strong>Airline:</strong> {{ flight.airline_id.name }}</p>
+<p><strong>Flight Number:</strong> {{ flight.flight_number }}</p>
+
+<p><strong>Аз фурудгоҳ:</strong> {{ flight.departure_airport.name }}  
+    ({{ flight.departure_airport.country }}, {{ flight.departure_airport.city }})
+</p>
+
+<p><strong>Ба фурудгоҳ:</strong> {{ flight.arrival_airport.name }}  
+    ({{ flight.arrival_airport.country }}, {{ flight.arrival_airport.city }})
+</p>
+
+<p><strong>Вақти парвоз:</strong> {{ flight.departure_time }}</p>
+<p><strong>Вақти расидан:</strong> {{ flight.arrival_time }}</p>
+
+<p><strong>Нарх:</strong> {{ flight.base_price }}$</p>
+
+<br>
+
+<a href="/booking/create/{{ flight.id }}/">
+    <button>Харидани чипта</button>
+</a>
+
+</body>
+</html>
