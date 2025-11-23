@@ -1,6 +1,8 @@
 from django.db import models
 from django.conf import settings
 
+
+
 class Airport(models.Model):
     code = models.IntegerField()
     name = models.CharField(max_length=200,unique=True)

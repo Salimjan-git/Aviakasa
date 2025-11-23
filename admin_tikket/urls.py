@@ -1,10 +1,13 @@
 from django.urls import path
 from admin_tikket.views import home
 from accounts.views import register_view, login_view, logout_view
+from .views import *
 
 urlpatterns = [
     path("", home, name='home'),
     path("register/", register_view, name='register'),
     path("login/", login_view, name='login'),
-    path("logout/", logout_view, name='logout')
+    path("logout/", logout_view, name='logout'),
+    path('flight/',flight_list_views,name = 'flight_list')
+    
 ]
