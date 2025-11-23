@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Seat Map</title>
+    <style>
+        .seat {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            margin: 5px;
+            border: 1px solid #000;
+            text-align: center;
+            line-height: 40px;
+        }
+        .available { background-color: #b7ffb7; }
+        .taken { background-color: #ff7f7f; }
+    </style>
+</head>
+<body>
+
+<h2>Ҷойҳои дастрас барои рейс {{ flight.flight_number }}</h2>
+
+{% for seat in seats %}
+    <div class="seat available">{{ seat.seat_number }}</div>
+{% endfor %}
+
+</body>
+</html>

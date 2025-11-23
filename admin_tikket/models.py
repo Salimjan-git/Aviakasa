@@ -1,18 +1,14 @@
 from django.db import models
 from django.conf import settings
 
-
-
 class Airport(models.Model):
     code = models.IntegerField()
     name = models.CharField(max_length=200,unique=True)
     country = models.CharField(max_length=100)
     city = models.CharField(max_length=100)
     
-    
     def __str__(self):
         return f'{self.code}'
-    
     
 class Airline(models.Model):
     name = models.CharField(max_length=100)
@@ -22,7 +18,6 @@ class Airline(models.Model):
     def __str__(self):
         return f'{self.name}'
     
-
 class Aircraft(models.Model):
     model_plane = models.CharField(max_length=100)
     seat_count = models.IntegerField()
@@ -30,7 +25,6 @@ class Aircraft(models.Model):
     def __str__(self):
         return f"{self.model_plane}"
     
-
 class Flights(models.Model):
     airline_id = models.ForeignKey(Airline,on_delete=models.CASCADE)
     aircraft_id = models.ForeignKey(Aircraft,on_delete=models.CASCADE)
@@ -41,13 +35,10 @@ class Flights(models.Model):
     arrival_time = models.DateTimeField(auto_now_add=True)
     base_price = models.IntegerField()
     
-
-    
 class Seat(models.Model):
     aircraft = models.ForeignKey(Aircraft,on_delete=models.CASCADE)
     seat_number = models.CharField(max_length=100)
     seat_class = models.CharField(max_length=100)
-    
     
 class Ticket(models.Model):
     flight = models.ForeignKey(Flights,on_delete=models.CASCADE)
@@ -56,7 +47,6 @@ class Ticket(models.Model):
     passport_number = models.CharField(max_length=100)
     price = models.IntegerField()
     
-
 class Booking(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                             on_delete=models.CASCADE ,related_name='booking')
@@ -65,11 +55,9 @@ class Booking(models.Model):
     total_price = models.DecimalField(max_digits=10,decimal_places=2)
     status = models.CharField(max_length=100)
     
-
 class Payment(models.Model):
     booking = models.OneToOneField(Booking,on_delete=models.CASCADE)
     amount = models.IntegerField()
     payment_method = models.CharField(max_length=100)
     status = models.CharField(max_length=200)
     paid_at = models.BooleanField(default=False)
-    
