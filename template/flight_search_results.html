@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flight Search Results</title>
+</head>
+<body>
+
+<h2>Result Search</h2>
+
+{% if flights %}
+    <table border="1">
+        <tr>
+            <th>Airline</th>
+            <th>Flight Number</th>
+            <th>From</th>
+            <th>To</th>
+            <th>Departure</th>
+            <th>Arrival</th>
+            <th>Details</th>
+        </tr>
+
+        {% for flight in flights %}
+        <tr>
+            <td>{{ flight.airline_id.name }}</td>
+            <td>{{ flight.flight_number }}</td>
+            <td>{{ flight.departure_airport.name }}</td>
+            <td>{{ flight.arrival_airport.name }}</td>
+            <td>{{ flight.departure_time }}</td>
+            <td>{{ flight.arrival_time }}</td>
+            <td>
+                <a href="{% url 'flight_detail' flight.id %}">Больше →</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+{% else %}
+    <p>Not found</p>
+{% endif %}
+
+</body>
+</html>
