@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponse
 from django.contrib.auth import login, logout, authenticate
 from .models import CustomUser
 
@@ -66,6 +66,9 @@ def login_view(request):
     })
 
 
-def logout_view(request):
-    logout(request)
-    return redirect('login')
+def logout_views(request):
+    try:
+        logout(request)
+        return redirect('login')
+    except Exception as err:
+        return HttpResponse(str(err))
