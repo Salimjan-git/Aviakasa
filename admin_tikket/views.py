@@ -77,3 +77,15 @@ def flight_list_views(request):
     return render(request , 'flight_list.html',
                 context={'flight':flight})
     
+def flight_search(request):
+    departure = request.GET.get("departure")
+    arrival = request.GET.get("arrival")
+
+    flights = Flights.objects.filter(
+        departure_airport__name__icontains=departure,
+        arrival_airport__name__icontains=arrival
+    )
+
+    return render(request, "flight_search_results.html", {"flights": flights})
+
+
