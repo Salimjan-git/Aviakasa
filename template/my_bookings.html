@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+
+{% block title %}Мои бронирования - AviaKasa{% endblock %}
+
+{% block main %}
+<div class="bookings-container">
+    <h1>Мои бронирования</h1>
+    
+    {% if bookings %}
+        {% for booking in bookings %}
+        <div class="booking-card">
+            <div class="booking-header">
+                <h3>Бронирование #{{ booking.id }}</h3>
+                <span class="status {{ booking.status }}">{{ booking.status }}</span>
+            </div>
+            
+            <div class="booking-details">
+                <p><strong>Дата создания:</strong> {{ booking.created_at|date:"d M Y H:i" }}</p>
+                <p><strong>Общая стоимость:</strong> {{ booking.total_price }} ₽</p>
+            </div>
+            
+            <div class="booking-actions">
+                <a href="{% url 'booking_detail' booking.id %}" class="btn btn-info">Подробнее</a>
+                {% if booking.status == 'pending' %}
+                    <a href="{% url 'cancel_booking' booking.id %}" class="btn btn-danger">Отменить</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="no-bookings">
+            <p>У вас нет бронирований</p>
+            <a href="{% url 'search_flights' %}" class="btn btn-primary">Найти рейсы</a>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+.bookings-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.booking-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    margin-bottom: 1rem;
+}
+
+.booking-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.status {
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.status.confirmed {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status.pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status.cancelled {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.booking-details {
+    margin-bottom: 1rem;
+}
+
+.booking-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.btn {
+    padding: 0.7rem 1.5rem;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-info {
+    background: #17a2b8;
+    color: white;
+}
+
+.btn-danger {
+    background: #dc3545;
+    color: white;
+}
+
+.btn-primary {
+    background: #1e3c72;
+    color: white;
+}
+
+.btn:hover {
+    opacity: 0.9;
+}
+
+.no-bookings {
+    text-align: center;
+    padding: 3rem;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+</style>
+{% endblock %}

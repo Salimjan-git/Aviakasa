@@ -1,34 +1,137 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Flight Details</title>
-</head>
-<body>
+{% extends 'base.html' %}
 
-<h2>Маълумоти рейс</h2>
+{% block title %}Рейс {{ flight.flight_number }} - AviaKasa{% endblock %}
 
-<p><strong>Airline:</strong> {{ flight.airline_id.name }}</p>
-<p><strong>Flight Number:</strong> {{ flight.flight_number }}</p>
+{% block main %}
+<div class="flight-detail">
+    <div class="flight-header">
+        <h1>Рейс {{ flight.flight_number }}</h1>
+        <div class="price">{{ flight.base_price }} ₽</div>
+    </div>
 
-<p><strong>Аз фурудгоҳ:</strong> {{ flight.departure_airport.name }}  
-    ({{ flight.departure_airport.country }}, {{ flight.departure_airport.city }})
-</p>
+    <div class="flight-info">
+        <div class="route">
+            <div class="departure">
+                <h3>{{ flight.departure_airport.city }}</h3>
+                <p>{{ flight.departure_airport.name }}</p>
+                <p>{{ flight.departure_time|date:"H:i, d M Y" }}</p>
+            </div>
+            <div class="arrow">→</div>
+            <div class="arrival">
+                <h3>{{ flight.arrival_airport.city }}</h3>
+                <p>{{ flight.arrival_airport.name }}</p>
+                <p>{{ flight.arrival_time|date:"H:i, d M Y" }}</p>
+            </div>
+        </div>
 
-<p><strong>Ба фурудгоҳ:</strong> {{ flight.arrival_airport.name }}  
-    ({{ flight.arrival_airport.country }}, {{ flight.arrival_airport.city }})
-</p>
+        <div class="details">
+            <div class="detail-item">
+                <strong>Авиакомпания:</strong>
+                <span>{{ flight.airline_id.name }}</span>
+            </div>
+            <div class="detail-item">
+                <strong>Самолет:</strong>
+                <span>{{ flight.aircraft_id.model_plane }}</span>
+            </div>
+            <div class="detail-item">
+                <strong>Мест:</strong>
+                <span>{{ flight.aircraft_id.seat_count }}</span>
+            </div>
+        </div>
+    </div>
 
-<p><strong>Вақти парвоз:</strong> {{ flight.departure_time }}</p>
-<p><strong>Вақти расидан:</strong> {{ flight.arrival_time }}</p>
+    <div class="actions">
+        <a href="{% url 'book_flight' flight.id %}" class="btn btn-primary">Забронировать</a>
+        <a href="{% url 'search_flights' %}" class="btn btn-secondary">Назад к поиску</a>
+    </div>
+</div>
 
-<p><strong>Нарх:</strong> {{ flight.base_price }}$</p>
+<style>
+.flight-detail {
+    max-width: 600px;
+    margin: 0 auto;
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
 
-<br>
+.flight-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid #f8f9fa;
+    padding-bottom: 1rem;
+}
 
-<a href="/booking/create/{{ flight.id }}/">
-    <button>Харидани чипта</button>
-</a>
+.flight-header h1 {
+    color: #1e3c72;
+    margin: 0;
+}
 
-</body>
-</html>
+.price {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #28a745;
+}
+
+.route {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.departure, .arrival {
+    text-align: center;
+    flex: 1;
+}
+
+.arrow {
+    font-size: 2rem;
+    color: #666;
+    margin: 0 2rem;
+}
+
+.details {
+    margin-bottom: 2rem;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.8rem 0;
+    border-bottom: 1px solid #f8f9fa;
+}
+
+.actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.btn {
+    padding: 1rem 2rem;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: #1e3c72;
+    color: white;
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.btn:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+}
+</style>
+{% endblock %}

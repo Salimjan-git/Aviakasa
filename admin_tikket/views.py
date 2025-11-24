@@ -1,7 +1,5 @@
 from django.shortcuts import render, redirect, HttpResponse
 from .models import *
-from django.contrib.auth.models import User
-from django.contrib.auth.hashers import make_password
 from django.contrib import messages
 from django.db.models import Q
 from django.utils import timezone
@@ -79,24 +77,18 @@ def book_flight(request, flight_id):
                 messages.error(request, 'Войдите в систему для бронирования')
                 return redirect('login')
 
+            passenger_name = request.POST.get('passenger_name')
+            passport_number = request.POST.get('passport_number')
+            seat_id = request.POST.get('seat_id')
+
             existing_ticket = Ticket.objects.filter(
                 Q(flight=flight) &
-                Q(passenger_name=request.POST.get('passenger_name')) |
-                Q(passport_number=request.POST.get('passport_number'))
+                (Q(passenger_name=passenger_name) | Q(passport_number=passport_number))
             ).first()
 
             if existing_ticket:
                 messages.error(request, 'Пассажир уже забронирован на этот рейс')
                 return redirect('flight_detail', flight_id=flight_id)
-
-            ticket = Ticket(
-                flight=flight,
-                passenger_name=request.POST.get('passenger_name'),
-                passport_number=request.POST.get('passport_number'),
-                seat_id=request.POST.get('seat_id'),
-                price=flight.base_price
-            )
-            ticket.save()
 
             booking = Booking(
                 user=request.user,
@@ -104,6 +96,17 @@ def book_flight(request, flight_id):
                 status='confirmed'
             )
             booking.save()
+
+            
+            ticket = Ticket(
+                booking=booking,
+                flight=flight,
+                seat_id=seat_id,
+                passenger_name=passenger_name,
+                passport_number=passport_number,
+                price=flight.base_price
+            )
+            ticket.save()
 
             messages.success(request, f'Билет забронирован! Номер: {ticket.id}')
             return redirect('my_bookings')
@@ -116,7 +119,30 @@ def book_flight(request, flight_id):
 
     except Flights.DoesNotExist:
         return HttpResponse("Рейс не найден")
+    
+def find_cheapest_flights(request):
+    departure = request.GET.get('departure', '')
+    arrival = request.GET.get('arrival', '')
 
+    if departure and arrival:
+        cheapest_flights = Flights.objects.filter(
+            Q(departure_airport__city__icontains=departure) &
+            Q(arrival_airport__city__icontains=arrival)
+        ).order_by('base_price')[:5]
+    else:
+        cheapest_flights = Flights.objects.all().order_by('base_price')[:10]
+
+    if cheapest_flights:
+        average_price = sum(flight.base_price for flight in cheapest_flights) // len(cheapest_flights)
+    else:
+        average_price = 0
+
+    return render(request, 'cheapest_flights.html', {
+        'cheapest_flights': cheapest_flights,
+        'departure': departure,
+        'arrival': arrival,
+        'average_price': average_price
+    })
 
 def my_bookings(request):
     if not request.user.is_authenticated:
@@ -378,6 +404,42 @@ def find_cheapest_flights(request):
         'arrival': arrival
     })
 
+def advanced_search(request):
+    if request.method == 'POST':
+        departure = request.POST.get('departure')
+        arrival = request.POST.get('arrival')
+        date_from = request.POST.get('date_from')
+        date_to = request.POST.get('date_to')
+        max_price = request.POST.get('max_price')
+        airline = request.POST.get('airline')
+        seat_class = request.POST.get('seat_class')
+        direct_only = request.POST.get('direct_only')
+
+        query = Q()
+
+        if departure:
+            query &= Q(departure_airport__city__icontains=departure) | Q(departure_airport__name__icontains=departure)
+
+        if arrival:
+            query &= Q(arrival_airport__city__icontains=arrival) | Q(arrival_airport__name__icontains=arrival)
+
+        if date_from and date_to:
+            query &= Q(departure_time__date__range=[date_from, date_to])
+
+        if max_price:
+            query &= Q(base_price__lte=max_price)
+
+        if airline:
+            query &= Q(airline_id__name__icontains=airline)
+
+
+
+        flights = Flights.objects.filter(query).order_by('departure_time')
+
+        return render(request, 'advanced_search_results.html', {'flights': flights})
+
+    airlines = Airline.objects.all()
+    return render(request, 'advanced_search.html', {'airlines': airlines})
 
 def flight_status(request):
     flight_number = request.GET.get('flight_number', '')

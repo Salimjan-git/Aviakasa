@@ -182,10 +182,10 @@ AviaKasa - Поиск авиабилетов
                 <h3>Для администраторов</h3>
                 {% if user.is_staff %}
                 <div class="admin-actions">
-                    <a href="#" class="admin-btn">Админ панель</a>
-                    <a href="#" class="admin-btn">Управление рейсами</a>
-                    <a href="#" class="admin-btn">Бронирования</a>
-                    <a href="#" class="admin-btn">Отчёты</a>
+                    <a href="/template/admin_dashboard.html" class="admin-btn">Админ панель</a>
+                    <a href="/template/admin_booking_search.html" class="admin-btn">Управление рейсами</a>
+                    <a href="/template/admin_revenue_analysis.html" class="admin-btn">Бронирования</a>
+                    <a href="/template/payment_success.html" class="admin-btn">Отчёты</a>
                 </div>
                 {% else %}
                 <p>Требуются права администратора</p>
@@ -839,11 +839,11 @@ AviaKasa - Поиск авиабилетов
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Установка сегодняшней даты
+        
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('departure-date').value = today;
         
-        // Переключение табов
+        
         const tabs = document.querySelectorAll('.tab');
         const returnField = document.getElementById('return-field');
         
@@ -852,7 +852,6 @@ AviaKasa - Поиск авиабилетов
                 tabs.forEach(t => t.classList.remove('active'));
                 this.classList.add('active');
                 
-                // Показ/скрытие поля обратной даты
                 if (this.dataset.tab === 'round-trip') {
                     returnField.style.display = 'block';
                 } else {
@@ -957,7 +956,6 @@ AviaKasa - Поиск авиабилетов
             });
         }, observerOptions);
 
-        // Применяем анимацию к карточкам
         document.querySelectorAll('.feature-card, .route-card, .tool-card, .airline-card').forEach(card => {
             card.style.opacity = '0';
             card.style.transform = 'translateY(20px)';

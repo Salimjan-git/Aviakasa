@@ -1,0 +1,201 @@
+{% extends 'base.html' %}
+
+{% block title %}Бронирования - AviaKasa{% endblock %}
+
+{% block main %}
+<div class="admin-container">
+    <h1>Управление бронированиями</h1>
+    
+    <div class="search-filters">
+        <h3>Поиск бронирований</h3>
+        <form method="get" class="filter-form">
+            <div class="filter-grid">
+                <input type="text" name="passenger_name" placeholder="Имя пассажира">
+                <input type="text" name="passport_number" placeholder="Номер паспорта">
+                <select name="status">
+                    <option value="">Все статусы</option>
+                    <option value="pending">Ожидание</option>
+                    <option value="confirmed">Подтверждено</option>
+                    <option value="cancelled">Отменено</option>
+                </select>
+                <button type="submit" class="btn btn-secondary">Найти</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="bookings-list">
+        <h3>Список бронирований</h3>
+        
+        {% if bookings %}
+            <div class="bookings-grid">
+                {% for booking in bookings %}
+                <div class="booking-card">
+                    <div class="booking-header">
+                        <h4>Бронирование #{{ booking.id }}</h4>
+                        <span class="status {{ booking.status }}">{{ booking.status }}</span>
+                    </div>
+                    
+                    <div class="booking-details">
+                        <p><strong>Пользователь:</strong> {{ booking.user.username }}</p>
+                        <p><strong>Дата создания:</strong> {{ booking.created_at|date:"d M Y H:i" }}</p>
+                        <p><strong>Стоимость:</strong> {{ booking.total_price }} ₽</p>
+                    </div>
+
+                    <div class="tickets-info">
+                        <strong>Билеты:</strong>
+                        {% for ticket in booking.tickets.all %}
+                        <div class="ticket-item">
+                            {{ ticket.passenger_name }} - {{ ticket.passport_number }}
+                            ({{ ticket.flight.flight_number }})
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="booking-actions">
+                        <a href="{% url 'booking_detail' booking.id %}" class="btn btn-sm btn-info">Подробнее</a>
+                        {% if booking.status == 'pending' %}
+                            <button class="btn btn-sm btn-success" onclick="alert('Подтверждение бронирования')">✅ Подтвердить</button>
+                        {% endif %}
+                        <button class="btn btn-sm btn-danger" onclick="alert('Отмена бронирования')">❌ Отменить</button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-data">
+                <p>Бронирования не найдены</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.admin-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.search-filters {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+.filter-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto;
+    gap: 1rem;
+    align-items: end;
+}
+
+.filter-grid input, .filter-grid select {
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+.bookings-list {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.bookings-grid {
+    display: grid;
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.booking-card {
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    padding: 1.5rem;
+    background: #f8f9fa;
+}
+
+.booking-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.booking-header h4 {
+    margin: 0;
+    color: #1e3c72;
+}
+
+.status {
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.status.pending { background: #fff3cd; color: #856404; }
+.status.confirmed { background: #d4edda; color: #155724; }
+.status.cancelled { background: #f8d7da; color: #721c24; }
+
+.booking-details {
+    margin-bottom: 1rem;
+}
+
+.booking-details p {
+    margin: 0.5rem 0;
+}
+
+.tickets-info {
+    margin-bottom: 1rem;
+}
+
+.ticket-item {
+    background: white;
+    padding: 0.5rem;
+    margin: 0.3rem 0;
+    border-radius: 5px;
+    font-size: 0.9rem;
+}
+
+.booking-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-sm {
+    padding: 0.3rem 0.8rem;
+    font-size: 0.8rem;
+}
+
+.btn-info { background: #17a2b8; color: white; }
+.btn-success { background: #28a745; color: white; }
+.btn-danger { background: #dc3545; color: white; }
+.btn-secondary { background: #6c757d; color: white; }
+
+.btn:hover {
+    opacity: 0.9;
+}
+
+.no-data {
+    text-align: center;
+    padding: 3rem;
+    color: #666;
+}
+</style>
+{% endblock %}

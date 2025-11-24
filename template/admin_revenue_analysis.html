@@ -1,0 +1,272 @@
+{% extends 'base.html' %}
+
+{% block title %}Анализ доходов - AviaKasa{% endblock %}
+
+{% block main %}
+<div class="admin-container">
+    <h1>Анализ доходов</h1>
+    
+    <div class="period-selector">
+        <h3>Выберите период</h3>
+        <div class="period-buttons">
+            <a href="?period=today" class="btn {% if period == 'today' %}btn-primary{% else %}btn-secondary{% endif %}">Сегодня</a>
+            <a href="?period=week" class="btn {% if period == 'week' %}btn-primary{% else %}btn-secondary{% endif %}">Неделя</a>
+            <a href="?period=month" class="btn {% if period == 'month' %}btn-primary{% else %}btn-secondary{% endif %}">Месяц</a>
+            <a href="?period=all" class="btn {% if period == 'all' %}btn-primary{% else %}btn-secondary{% endif %}">Все время</a>
+        </div>
+    </div>
+
+    <div class="revenue-stats">
+        <div class="stat-card main-stat">
+            <h3>Общий доход</h3>
+            <div class="stat-number">{{ total_revenue }} ₽</div>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Количество платежей</h3>
+                <div class="stat-number">{{ payments.count }}</div>
+            </div>
+            <div class="stat-card">
+                <h3>Средний чек</h3>
+                <div class="stat-number">
+                    {% if payments.count > 0 %}
+                        {{ total_revenue|floatformat:0 }} ₽
+                    {% else %}
+                        0 ₽
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="revenue-breakdown">
+        <h3>Доход по авиакомпаниям</h3>
+        <div class="breakdown-list">
+            {% for airline, revenue in airline_revenue.items %}
+            <div class="breakdown-item">
+                <span class="airline-name">{{ airline }}</span>
+                <span class="revenue-amount">{{ revenue }} ₽</span>
+                <div class="revenue-bar">
+                    <div class="bar-fill" style="width: {% widthratio revenue total_revenue 100 %}%"></div>
+                </div>
+            </div>
+            {% empty %}
+            <p>Нет данных о доходах</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="recent-payments">
+        <h3>Последние платежи</h3>
+        {% if payments %}
+            <div class="payments-list">
+                {% for payment in payments %}
+                <div class="payment-item">
+                    <div class="payment-info">
+                        <strong>#{{ payment.booking.id }}</strong>
+                        <span>{{ payment.amount }} ₽</span>
+                        <span class="payment-method">{{ payment.payment_method }}</span>
+                        <span class="status {{ payment.status }}">{{ payment.status }}</span>
+                    </div>
+                    <span class="payment-date">
+                        {% if payment.paid_at %}
+                            {{ payment.paid_at|date:"d M H:i" }}
+                        {% else %}
+                            Не оплачен
+                        {% endif %}
+                    </span>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-data">
+                <p>Платежи не найдены</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.admin-container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.period-selector {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+.period-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.revenue-stats {
+    display: grid;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.main-stat {
+    grid-column: 1 / -1;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.stat-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.stat-card h3 {
+    color: #666;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #1e3c72;
+}
+
+.main-stat .stat-number {
+    font-size: 3rem;
+    color: #28a745;
+}
+
+.revenue-breakdown {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+.breakdown-list {
+    margin-top: 1rem;
+}
+
+.breakdown-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid #f8f9fa;
+}
+
+.breakdown-item:last-child {
+    border-bottom: none;
+}
+
+.airline-name {
+    flex: 1;
+    font-weight: 600;
+}
+
+.revenue-amount {
+    margin: 0 1rem;
+    font-weight: 600;
+    color: #28a745;
+}
+
+.revenue-bar {
+    flex: 2;
+    height: 10px;
+    background: #f8f9fa;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #1e3c72, #2a5298);
+    transition: width 0.3s ease;
+}
+
+.recent-payments {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.payments-list {
+    margin-top: 1rem;
+}
+
+.payment-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 5px;
+    margin-bottom: 0.5rem;
+}
+
+.payment-info {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.payment-method {
+    background: #e9ecef;
+    padding: 0.2rem 0.5rem;
+    border-radius: 3px;
+    font-size: 0.8rem;
+}
+
+.status {
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.status.completed { background: #d4edda; color: #155724; }
+.status.pending { background: #fff3cd; color: #856404; }
+.status.failed { background: #f8d7da; color: #721c24; }
+
+.payment-date {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.btn {
+    padding: 0.7rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-primary { background: #1e3c72; color: white; }
+.btn-secondary { background: #6c757d; color: white; }
+
+.btn:hover {
+    opacity: 0.9;
+}
+
+.no-data {
+    text-align: center;
+    padding: 2rem;
+    color: #666;
+}
+</style>
+{% endblock %}

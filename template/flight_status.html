@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+
+{% block title %}Статус рейса - AviaKasa{% endblock %}
+
+{% block main %}
+<div class="status-container">
+    <h1>Проверка статуса рейса</h1>
+    
+    <form method="get" class="status-form">
+        <div class="form-group">
+            <input type="text" name="flight_number" placeholder="Номер рейса" value="{{ request.GET.flight_number }}">
+            <input type="text" name="airline" placeholder="Авиакомпания" value="{{ request.GET.airline }}">
+            <button type="submit" class="btn btn-primary">Проверить</button>
+        </div>
+    </form>
+
+    {% if flights %}
+    <div class="results">
+        <h2>Найденные рейсы</h2>
+        
+        {% for flight in flights %}
+        <div class="status-card">
+            <div class="status-header">
+                <h3>Рейс {{ flight.flight_number }}</h3>
+                <span class="status-badge on-time">По расписанию</span>
+            </div>
+            
+            <div class="flight-info">
+                <div class="route">
+                    <div class="airport">
+                        <strong>{{ flight.departure_airport.city }}</strong>
+                        <span>{{ flight.departure_airport.code }}</span>
+                    </div>
+                    <div class="arrow">→</div>
+                    <div class="airport">
+                        <strong>{{ flight.arrival_airport.city }}</strong>
+                        <span>{{ flight.arrival_airport.code }}</span>
+                    </div>
+                </div>
+                
+                <div class="times">
+                    <div class="time">
+                        <strong>Вылет:</strong>
+                        <span>{{ flight.departure_time|date:"H:i" }}</span>
+                    </div>
+                    <div class="time">
+                        <strong>Прилёт:</strong>
+                        <span>{{ flight.arrival_time|date:"H:i" }}</span>
+                    </div>
+                </div>
+                
+                <div class="airline">
+                    <strong>Авиакомпания:</strong>
+                    <span>{{ flight.airline_id.name }}</span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% elif request.GET.flight_number %}
+    <div class="no-results">
+        <p>Рейсы не найдены</p>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.status-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.status-form {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+.form-group {
+    display: flex;
+    gap: 1rem;
+}
+
+.form-group input {
+    flex: 1;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+.btn {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: #1e3c72;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #2a5298;
+}
+
+.status-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    margin-bottom: 1rem;
+}
+
+.status-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.status-badge {
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.status-badge.on-time {
+    background: #d4edda;
+    color: #155724;
+}
+
+.route {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.airport {
+    text-align: center;
+    flex: 1;
+}
+
+.arrow {
+    font-size: 1.5rem;
+    color: #666;
+    margin: 0 1rem;
+}
+
+.times {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    color: #666;
+}
+
+.airline {
+    color: #666;
+}
+
+.no-results {
+    text-align: center;
+    padding: 3rem;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    color: #666;
+}
+</style>
+{% endblock %}
