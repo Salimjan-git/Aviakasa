@@ -34,6 +34,7 @@ class Flights(models.Model):
     departure_time = models.DateTimeField(auto_now_add=True)
     arrival_time = models.DateTimeField(auto_now_add=True)
     base_price = models.IntegerField()
+    image = models.ImageField()
     
 class Seat(models.Model):
     aircraft = models.ForeignKey(Aircraft,on_delete=models.CASCADE)

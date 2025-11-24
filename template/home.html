@@ -113,8 +113,11 @@ AviaKasa - Поиск авиабилетов
         <h2 style="color: white;" class="section-title">Популярные направления</h2>
 <div class="routes-grid">
     {% for flight in flights %}
-    <div class="route-card" onclick="location.href='{% url 'flight_detail' flight.id %}'">
-        <div class="route-image" style="background-image: url('{{ flight.airline_id.logo.url }}')"></div>
+    <div class="route-card">
+
+        <div class="route-image"
+             style="background-image: url('{{ flight.image.url}}');">
+        </div>
 
         <div class="route-info">
             <h3>{{ flight.departure_airport.city }} → {{ flight.arrival_airport.city }}</h3>
@@ -126,16 +129,12 @@ AviaKasa - Поиск авиабилетов
             </span>
 
             <div class="route-actions">
-                <a href="{% url 'flight_detail' flight.id %}" class="route-btn">
-                    Подробнее
-                </a>
-                <a href="{% url 'book_flight' flight.id %}" class="route-btn primary">
-                    Забронировать
-                </a>
+                <a href="{% url 'flight_detail' flight.id %}" class="route-btn">Подробнее</a>
+                <a href="{% url 'book_flight' flight.id %}" class="route-btn primary">Забронировать</a>
             </div>
         </div>
-    </div>
 
+    </div>
     {% empty %}
     <div class="no-flights">
         <p>Рейсы не найдены</p>
@@ -144,7 +143,7 @@ AviaKasa - Поиск авиабилетов
 </div>
 
 
-<div class="user-section">
+<div class="user-section" style="margin-top: 80px;">
     <div class="container">
         <h2 class="section-title">Личный кабинет</h2>
         <div class="user-grid">
@@ -179,7 +178,7 @@ AviaKasa - Поиск авиабилетов
             {% endif %}
 
             <div class="admin-card">
-                <h3>Для администраторов</h3>
+                <h3 style="margin-bottom: 20px;">Для администраторов</h3>
                 {% if user.is_staff %}
                 <div class="admin-actions">
                     <a href="/template/admin_dashboard.html" class="admin-btn">Админ панель</a>
@@ -242,7 +241,7 @@ AviaKasa - Поиск авиабилетов
             <div class="tool-card">
                 <h3>📅 Расписание</h3>
                 <p>Посмотрите расписание всех рейсов</p>
-                <a href="#" class="tool-btn">Открыть расписание</a>
+                <a href="{% url 'flight_schedule' %}" class="tool-btn">Открыть расписание</a>
             </div>
 
             <div class="tool-card">
@@ -429,6 +428,14 @@ AviaKasa - Поиск авиабилетов
         min-width: 20px;
         text-align: center;
     }
+    .route-image {
+        width: 100%;
+        height: 180px;          
+        background-size: cover;   
+        background-position: center;
+        background-repeat: no-repeat;
+        border-radius: 12px 12px 0 0;
+    }
 
     .search-btn {
         background: linear-gradient(135deg, #1e3c72, #2a5298);
@@ -553,10 +560,6 @@ AviaKasa - Поиск авиабилетов
         transform: translateY(-5px);
     }
 
-    .route-image {
-        height: 150px;
-        background: linear-gradient(135deg, #667eea, #764ba2);
-    }
 
     .route-info {
         padding: 1.5rem;
