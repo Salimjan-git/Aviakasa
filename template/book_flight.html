@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+
+{% block title %}Бронирование - AviaKasa{% endblock %}
+
+{% block main %}
+<div class="booking-container">
+    <h1>Бронирование рейса</h1>
+    
+    <div class="flight-summary">
+        <h3>Рейс {{ flight.flight_number }}</h3>
+        <p>{{ flight.departure_airport.city }} → {{ flight.arrival_airport.city }}</p>
+        <p>{{ flight.departure_time|date:"d M Y H:i" }}</p>
+        <p class="price">{{ flight.base_price }} ₽</p>
+    </div>
+
+    <form method="post" class="booking-form">
+        {% csrf_token %}
+        
+        <div class="form-section">
+            <h3>Данные пассажира</h3>
+            <div class="input-group">
+                <input type="text" name="passenger_name" placeholder="ФИО пассажира" required>
+                <input type="text" name="passport_number" placeholder="Номер паспорта" required>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3>Выбор места</h3>
+            <select name="seat_id" required>
+                <option value="">Выберите место</option>
+                {% for seat in seats %}
+                    <option value="{{ seat.id }}">{{ seat.seat_number }} ({{ seat.seat_class }})</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="booking-summary">
+            <h3>Итого к оплате: {{ flight.base_price }} ₽</h3>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Подтвердить бронирование</button>
+    </form>
+</div>
+
+<style>
+.booking-container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.flight-summary {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.flight-summary h3 {
+    color: #1e3c72;
+    margin-bottom: 0.5rem;
+}
+
+.price {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #28a745;
+    margin-top: 1rem;
+}
+
+.booking-form {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.form-section {
+    margin-bottom: 2rem;
+}
+
+.form-section h3 {
+    margin-bottom: 1rem;
+    color: #1e3c72;
+}
+
+.input-group {
+    display: flex;
+    gap: 1rem;
+}
+
+.input-group input {
+    flex: 1;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+select {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+.booking-summary {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 5px;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.btn {
+    width: 100%;
+    padding: 1rem;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: #28a745;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #218838;
+}
+</style>
+{% endblock %}

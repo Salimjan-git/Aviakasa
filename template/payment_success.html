@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block title %}Оплата успешна - AviaKasa{% endblock %}
+
+{% block main %}
+<div class="success-container">
+    <div class="success-icon">✅</div>
+    <h1>Оплата прошла успешно!</h1>
+    
+    <div class="success-details">
+        <div class="detail-card">
+            <h3>Бронирование #{{ booking.id }} подтверждено</h3>
+            <div class="details">
+                <p><strong>Статус:</strong> <span class="status confirmed">Подтверждено</span></p>
+                <p><strong>Сумма оплаты:</strong> {{ booking.total_price }} ₽</p>
+                <p><strong>Дата оплаты:</strong> {% now "d M Y H:i" %}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="next-steps">
+        <h3>Что дальше?</h3>
+        <ul>
+            <li>📧 На вашу почту отправлено подтверждение</li>
+            <li>📱 Сохраните номер бронирования</li>
+            <li>🛫 Приходите в аэропорт за 2 часа до вылета</li>
+        </ul>
+    </div>
+
+    <div class="actions">
+        <a href="{% url 'my_bookings' %}" class="btn btn-primary">Мои бронирования</a>
+        <a href="{% url 'home' %}" class="btn btn-secondary">На главную</a>
+    </div>
+</div>
+
+<style>
+.success-container {
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.success-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.success-details {
+    margin: 2rem 0;
+}
+
+.detail-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.details {
+    text-align: left;
+    margin-top: 1rem;
+}
+
+.details p {
+    margin-bottom: 0.8rem;
+    display: flex;
+    justify-content: space-between;
+}
+
+.status {
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.status.confirmed {
+    background: #d4edda;
+    color: #155724;
+}
+
+.next-steps {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 10px;
+    margin: 2rem 0;
+    text-align: left;
+}
+
+.next-steps h3 {
+    margin-bottom: 1rem;
+    color: #1e3c72;
+}
+
+.next-steps ul {
+    list-style: none;
+    padding: 0;
+}
+
+.next-steps li {
+    padding: 0.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.btn {
+    padding: 1rem 2rem;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: #1e3c72;
+    color: white;
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.btn:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+}
+</style>
+{% endblock %}

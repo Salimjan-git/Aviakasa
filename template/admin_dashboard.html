@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+
+{% block title %}Админ панель - AviaKasa{% endblock %}
+
+{% block main %}
+<div class="admin-dashboard">
+    <h1>Админ панель</h1>
+    
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>Всего рейсов</h3>
+            <div class="stat-number">{{ total_flights }}</div>
+        </div>
+        <div class="stat-card">
+            <h3>Активные бронирования</h3>
+            <div class="stat-number">{{ active_bookings }}</div>
+        </div>
+        <div class="stat-card">
+            <h3>Отмененные бронирования</h3>
+            <div class="stat-number">{{ cancelled_bookings }}</div>
+        </div>
+        <div class="stat-card">
+            <h3>Завершенные платежи</h3>
+            <div class="stat-number">{{ completed_payments }}</div>
+        </div>
+    </div>
+
+    <div class="admin-actions">
+        <h2>Быстрые действия</h2>
+        <div class="action-grid">
+            <a href="{% url 'admin_flight_search' %}" class="action-card">
+                <h3>✈️ Управление рейсами</h3>
+                <p>Добавление и редактирование рейсов</p>
+            </a>
+            <a href="{% url 'admin_booking_search' %}" class="action-card">
+                <h3>📋 Бронирования</h3>
+                <p>Просмотр всех бронирований</p>
+            </a>
+            <a href="{% url 'admin_revenue_analysis' %}" class="action-card">
+                <h3>💰 Отчеты</h3>
+                <p>Анализ доходов и статистика</p>
+            </a>
+        </div>
+    </div>
+
+    <div class="recent-bookings">
+        <h2>Последние бронирования</h2>
+        {% if recent_bookings %}
+            <div class="bookings-list">
+                {% for booking in recent_bookings %}
+                <div class="booking-item">
+                    <div class="booking-info">
+                        <strong>#{{ booking.id }}</strong>
+                        <span>{{ booking.user.username }}</span>
+                        <span>{{ booking.total_price }} ₽</span>
+                        <span class="status {{ booking.status }}">{{ booking.status }}</span>
+                    </div>
+                    <span class="date">{{ booking.created_at|date:"d M H:i" }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>Нет recent_bookings</p>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.admin-dashboard {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.stat-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.stat-card h3 {
+    color: #666;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #1e3c72;
+}
+
+.admin-actions {
+    margin-bottom: 3rem;
+}
+
+.action-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.action-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s ease;
+}
+
+.action-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+}
+
+.action-card h3 {
+    color: #1e3c72;
+    margin-bottom: 1rem;
+}
+
+.action-card p {
+    color: #666;
+    margin: 0;
+}
+
+.recent-bookings {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.bookings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.booking-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 5px;
+}
+
+.booking-info {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.status {
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.status.confirmed { background: #d4edda; color: #155724; }
+.status.pending { background: #fff3cd; color: #856404; }
+.status.cancelled { background: #f8d7da; color: #721c24; }
+
+.date {
+    color: #666;
+    font-size: 0.9rem;
+}
+</style>
+{% endblock %}

@@ -40,20 +40,19 @@ class Seat(models.Model):
     seat_number = models.CharField(max_length=100)
     seat_class = models.CharField(max_length=100)
     
-class Ticket(models.Model):
-    flight = models.ForeignKey(Flights,on_delete=models.CASCADE)
-    seat = models.ForeignKey(Seat,on_delete=models.CASCADE)
-    passenger_name = models.CharField( max_length=100)
-    passport_number = models.CharField(max_length=100)
-    price = models.IntegerField()
-    
 class Booking(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,
-                            on_delete=models.CASCADE ,related_name='booking')
-    
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='bookings')
     created_at = models.DateTimeField(auto_now_add=True)
     total_price = models.DecimalField(max_digits=10,decimal_places=2)
-    status = models.CharField(max_length=100)
+    status = models.CharField(max_length=100, default='pending')
+    
+class Ticket(models.Model):
+    booking = models.ForeignKey(Booking, on_delete=models.CASCADE, related_name='tickets', null=True, blank=True)
+    flight = models.ForeignKey(Flights,on_delete=models.CASCADE)
+    seat = models.ForeignKey(Seat,on_delete=models.CASCADE)
+    passenger_name = models.CharField(max_length=100)
+    passport_number = models.CharField(max_length=100)
+    price = models.IntegerField()
     
 class Payment(models.Model):
     booking = models.OneToOneField(Booking,on_delete=models.CASCADE)

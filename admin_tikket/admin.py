@@ -9,4 +9,4 @@ admin.site.register(Payment)
 admin.site.register(Seat)
 admin.site.register(Flights)
 
-# Register your models here.
+

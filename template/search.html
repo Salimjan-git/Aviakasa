@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+
+{% block title %}Поиск рейсов - AviaKasa{% endblock %}
+
+{% block main %}
+<div class="search-container">
+    <h1>Поиск рейсов</h1>
+    
+    <form method="post" class="search-form">
+        {% csrf_token %}
+        <div class="form-group">
+            <div class="input-pair">
+                <div class="input-field">
+                    <label>Откуда</label>
+                    <input type="text" name="departure" value="{{ request.POST.departure }}" required>
+                </div>
+                <div class="input-field">
+                    <label>Куда</label>
+                    <input type="text" name="arrival" value="{{ request.POST.arrival }}" required>
+                </div>
+            </div>
+            
+            <div class="input-pair">
+                <div class="input-field">
+                    <label>Дата вылета</label>
+                    <input type="date" name="date" value="{{ request.POST.date }}" required>
+                </div>
+                <div class="input-field">
+                    <label>Пассажиры</label>
+                    <select name="passengers">
+                        {% for i in "1234" %}
+                            <option value="{{ forloop.counter }}" 
+                                    {% if request.POST.passengers == forloop.counter|stringformat:"i" %}selected{% endif %}>
+                                {{ forloop.counter }} пассажир{{ forloop.counter|pluralize:"а,ов" }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <button type="submit" class="search-btn">Найти рейсы</button>
+    </form>
+
+    {% if flights %}
+    <div class="results">
+        <h2>Найденные рейсы ({{ flights.count }})</h2>
+        
+        {% for flight in flights %}
+        <div class="flight-card">
+            <div class="flight-header">
+                <h3>Рейс {{ flight.flight_number }}</h3>
+                <span class="price">{{ flight.base_price }} ₽</span>
+            </div>
+            
+            <div class="flight-route">
+                <div class="city">
+                    <strong>{{ flight.departure_airport.city }}</strong>
+                    <span>{{ flight.departure_airport.code }}</span>
+                </div>
+                <div class="arrow">→</div>
+                <div class="city">
+                    <strong>{{ flight.arrival_airport.city }}</strong>
+                    <span>{{ flight.arrival_airport.code }}</span>
+                </div>
+            </div>
+            
+            <div class="flight-info">
+                <span>🛫 {{ flight.departure_time|date:"H:i" }}</span>
+                <span>🛬 {{ flight.arrival_time|date:"H:i" }}</span>
+                <span>✈️ {{ flight.airline_id.name }}</span>
+            </div>
+            
+            <div class="flight-actions">
+                <a href="{% url 'flight_detail' flight.id %}" class="btn btn-info">Подробнее</a>
+                <a href="{% url 'book_flight' flight.id %}" class="btn btn-primary">Забронировать</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.search-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.search-form {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.input-pair {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.input-field {
+    flex: 1;
+}
+
+.input-field label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.input-field input, .input-field select {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+.search-btn {
+    background: #1e3c72;
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    width: 100%;
+}
+
+.search-btn:hover {
+    background: #2a5298;
+}
+
+.flight-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    margin-bottom: 1rem;
+}
+
+.flight-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.price {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #28a745;
+}
+
+.flight-route {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.city {
+    text-align: center;
+}
+
+.arrow {
+    font-size: 1.5rem;
+    color: #666;
+}
+
+.flight-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    color: #666;
+}
+
+.flight-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.btn {
+    padding: 0.7rem 1.5rem;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-info {
+    background: #17a2b8;
+    color: white;
+}
+
+.btn-primary {
+    background: #1e3c72;
+    color: white;
+}
+
+.btn:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+}
+</style>
+{% endblock %}

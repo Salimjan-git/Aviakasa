@@ -1,0 +1,210 @@
+{% extends 'base.html' %}
+
+{% block title %}Расписание рейсов - AviaKasa{% endblock %}
+
+{% block main %}
+<div class="schedule-container">
+    <h1>Расписание рейсов</h1>
+    
+    <div class="schedule-filters">
+        <input type="text" id="search-input" placeholder="Поиск по номеру рейса или городу...">
+    </div>
+
+    <div class="flights-list">
+        {% for flight in flights %}
+        <div class="flight-card" data-flight="{{ flight.flight_number }} {{ flight.departure_airport.city }} {{ flight.arrival_airport.city }}">
+            <div class="flight-header">
+                <div class="flight-info">
+                    <h3>{{ flight.airline_id.name }} - Рейс {{ flight.flight_number }}</h3>
+                    <div class="route">
+                        <span class="city">{{ flight.departure_airport.city }}</span>
+                        <span class="arrow">→</span>
+                        <span class="city">{{ flight.arrival_airport.city }}</span>
+                    </div>
+                </div>
+                <div class="flight-price">{{ flight.base_price }} ₽</div>
+            </div>
+            
+            <div class="flight-details">
+                <div class="time-info">
+                    <div class="time">
+                        <strong>{{ flight.departure_time|date:"H:i" }}</strong>
+                        <span>{{ flight.departure_airport.code }}</span>
+                    </div>
+                    <div class="duration">🛫</div>
+                    <div class="time">
+                        <strong>{{ flight.arrival_time|date:"H:i" }}</strong>
+                        <span>{{ flight.arrival_airport.code }}</span>
+                    </div>
+                </div>
+                
+                <div class="flight-meta">
+                    <span>✈️ {{ flight.aircraft_id.model_plane }}</span>
+                    <span>💺 {{ flight.aircraft_id.seat_count }} мест</span>
+                </div>
+            </div>
+            
+            <div class="flight-actions">
+                <a href="{% url 'flight_detail' flight.id %}" class="btn btn-info">Подробнее</a>
+                <a href="{% url 'book_flight' flight.id %}" class="btn btn-primary">Забронировать</a>
+            </div>
+        </div>
+        {% empty %}
+        <div class="no-flights">
+            <p>Рейсы не найдены</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+.schedule-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.schedule-filters {
+    margin-bottom: 2rem;
+}
+
+#search-input {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+.flights-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.flight-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.flight-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.flight-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 1rem;
+}
+
+.flight-info h3 {
+    color: #1e3c72;
+    margin-bottom: 0.5rem;
+}
+
+.route {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #666;
+}
+
+.flight-price {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #28a745;
+}
+
+.flight-details {
+    margin-bottom: 1rem;
+}
+
+.time-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.time {
+    text-align: center;
+}
+
+.time strong {
+    display: block;
+    font-size: 1.2rem;
+    color: #333;
+}
+
+.duration {
+    font-size: 1.5rem;
+}
+
+.flight-meta {
+    display: flex;
+    gap: 1rem;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.flight-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.btn {
+    padding: 0.7rem 1.5rem;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-info {
+    background: #17a2b8;
+    color: white;
+}
+
+.btn-primary {
+    background: #1e3c72;
+    color: white;
+}
+
+.btn:hover {
+    opacity: 0.9;
+}
+
+.no-flights {
+    text-align: center;
+    padding: 3rem;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    color: #666;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('search-input');
+    const flightCards = document.querySelectorAll('.flight-card');
+    
+    searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        
+        flightCards.forEach(card => {
+            const flightData = card.getAttribute('data-flight').toLowerCase();
+            if (flightData.includes(searchTerm)) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Расширенный поиск авиабилетов</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            color: #2c3e50;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            color: #7f8c8d;
+        }
+
+        .search-container {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 968px) {
+            .search-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .search-form {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .search-sidebar {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            height: fit-content;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .form-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            font-size: 1.3rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .date-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .price-slider {
+            padding: 20px 0;
+        }
+
+        .slider-container {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .slider-value {
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-top: 10px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: #e1e5e9;
+            border-radius: 3px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #667eea;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            background: #764ba2;
+            transform: scale(1.1);
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 6px;
+            transition: background-color 0.3s;
+        }
+
+        .checkbox-label:hover {
+            background: #f8f9fa;
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #667eea;
+        }
+
+        .airline-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 10px;
+            border: 1px solid #e1e5e9;
+            border-radius: 8px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ecf0f1;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #667eea;
+            color: #667eea;
+        }
+
+        .btn-outline:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+
+        .quick-tips {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .quick-tips h3 {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tips-list {
+            list-style: none;
+        }
+
+        .tips-list li {
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .tips-list li:before {
+            content: "💡";
+            position: absolute;
+            left: 0;
+        }
+
+        .stats-card {
+            background: linear-gradient(135deg, #00b894, #00a085);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .stats-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stats-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .feature-list {
+            list-style: none;
+        }
+
+        .feature-list li {
+            margin-bottom: 12px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: transform 0.3s;
+        }
+
+        .feature-list li:hover {
+            transform: translateX(5px);
+            background: #e9ecef;
+        }
+
+        .feature-icon {
+            width: 30px;
+            height: 30px;
+            background: #667eea;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8rem;
+        }
+
+        .airport-suggestions {
+            position: absolute;
+            background: white;
+            border: 1px solid #e1e5e9;
+            border-radius: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .suggestion-item {
+            padding: 12px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #f8f9fa;
+            transition: background-color 0.2s;
+        }
+
+        .suggestion-item:hover {
+            background: #f8f9fa;
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .input-with-suggestions {
+            position: relative;
+        }
+
+        .search-modes {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .mode-btn {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            background: #f8f9fa;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .mode-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .class-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .class-option {
+            text-align: center;
+            padding: 15px 10px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .class-option:hover {
+            border-color: #667eea;
+        }
+
+        .class-option.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .date-inputs {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            .class-selector {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🎯 Расширенный поиск авиабилетов</h1>
+            <p>Найдите идеальный рейс с помощью расширенных фильтров и параметров</p>
+        </div>
+
+        <div class="search-container">
+            <!-- Main Search Form -->
+            <div class="search-form">
+                <form method="POST" action="{% url 'advanced_search' %}">
+                    {% csrf_token %}
+                    
+                    <!-- Route Information -->
+                    <div class="form-section">
+                        <h3 class="section-title">📍 Маршрут</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Откуда</label>
+                                <div class="input-with-suggestions">
+                                    <input type="text" 
+                                           class="form-input" 
+                                           name="departure" 
+                                           placeholder="Город или аэропорт"
+                                           value="{{ request.POST.departure }}"
+                                           id="departure-input">
+                                    <div class="airport-suggestions" id="departure-suggestions"></div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Куда</label>
+                                <div class="input-with-suggestions">
+                                    <input type="text" 
+                                           class="form-input" 
+                                           name="arrival" 
+                                           placeholder="Город или аэропорт"
+                                           value="{{ request.POST.arrival }}"
+                                           id="arrival-input">
+                                    <div class="airport-suggestions" id="arrival-suggestions"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dates -->
+                    <div class="form-section">
+                        <h3 class="section-title">📅 Даты вылета</h3>
+                        <div class="date-inputs">
+                            <div class="form-group">
+                                <label class="form-label">С</label>
+                                <input type="date" 
+                                       class="form-input" 
+                                       name="date_from" 
+                                       value="{{ request.POST.date_from }}">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">По</label>
+                                <input type="date" 
+                                       class="form-input" 
+                                       name="date_to" 
+                                       value="{{ request.POST.date_to }}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Price Range -->
+                    <div class="form-section">
+                        <h3 class="section-title">💰 Бюджет</h3>
+                        <div class="form-group">
+                            <label class="form-label">Максимальная цена: <span id="price-value">{{ request.POST.max_price|default:"50000" }}</span> ₽</label>
+                            <div class="slider-container">
+                                <input type="range" 
+                                       id="price-slider" 
+                                       name="max_price" 
+                                       min="0" 
+                                       max="100000" 
+                                       step="1000"
+                                       value="{{ request.POST.max_price|default:'50000' }}"
+                                       class="form-input">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Airlines -->
+                    <div class="form-section">
+                        <h3 class="section-title">✈️ Авиакомпании</h3>
+                        <div class="form-group">
+                            <select class="form-select" name="airline">
+                                <option value="">Все авиакомпании</option>
+                                {% for airline in airlines %}
+                                <option value="{{ airline.name }}" 
+                                        {% if request.POST.airline == airline.name %}selected{% endif %}>
+                                    {{ airline.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Flight Class -->
+                    <div class="form-section">
+                        <h3 class="section-title">💺 Класс обслуживания</h3>
+                        <div class="class-selector">
+                            <div class="class-option" data-value="">
+                                <div>💼 Любой</div>
+                            </div>
+                            <div class="class-option" data-value="economy">
+                                <div>💺 Эконом</div>
+                            </div>
+                            <div class="class-option" data-value="business">
+                                <div>⭐ Бизнес</div>
+                            </div>
+                        </div>
+                        <input type="hidden" name="seat_class" id="seat-class-input" value="{{ request.POST.seat_class }}">
+                    </div>
+
+                    <!-- Additional Filters -->
+                    <div class="form-section">
+                        <h3 class="section-title">⚙️ Дополнительные параметры</h3>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="direct_only" {% if request.POST.direct_only %}checked{% endif %}>
+                                <span>Только прямые рейсы</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="overnight" {% if request.POST.overnight %}checked{% endif %}>
+                                <span>Ночные рейсы</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="morning_flights" {% if request.POST.morning_flights %}checked{% endif %}>
+                                <span>Утренние вылеты (06:00-12:00)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+                        <button type="reset" class="btn btn-secondary">
+                            🗑️ Очистить
+                        </button>
+                        <a href="{% url 'search_flights' %}" class="btn btn-outline">
+                            ← Простой поиск
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            🔍 Найти рейсы
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="search-sidebar">
+                <!-- Quick Tips -->
+                <div class="quick-tips">
+                    <h3>💡 Советы по поиску</h3>
+                    <ul class="tips-list">
+                        <li>Используйте широкий диапазон дат для лучших цен</li>
+                        <li>Сравнивайте разные авиакомпании</li>
+                        <li>Утренние рейсы часто дешевле</li>
+                        <li>Бронируйте заранее для лучших предложений</li>
+                    </ul>
+                </div>
+
+                <!-- Statistics -->
+                <div class="stats-card">
+                    <div class="stats-number">{{ airlines|length }}+</div>
+                    <div class="stats-label">Авиакомпаний</div>
+                </div>
+
+                <!-- Features -->
+                <div>
+                    <h3 class="section-title">🎁 Преимущества поиска</h3>
+                    <ul class="feature-list">
+                        <li>
+                            <div class="feature-icon">💰</div>
+                            <span>Гибкий поиск по цене</span>
+                        </li>
+                        <li>
+                            <div class="feature-icon">📅</div>
+                            <span>Диапазон дат</span>
+                        </li>
+                        <li>
+                            <div class="feature-icon">✈️</div>
+                            <span>Фильтр по авиакомпаниям</span>
+                        </li>
+                        <li>
+                            <div class="feature-icon">💺</div>
+                            <span>Выбор класса обслуживания</span>
+                        </li>
+                        <li>
+                            <div class="feature-icon">⚡</div>
+                            <span>Дополнительные фильтры</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!--  Links -->
+                <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #ecf0f1;">
+                    <h3 class="section-title">🔗 Быстрые ссылки</h3>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <a href="{% url 'cheapest_flights' %}" class="btn btn-outline" style="justify-content: center;">
+                            💰 Самые дешевые
+                        </a>
+                        <a href="{% url 'flight_schedule' %}" class="btn btn-outline" style="justify-content: center;">
+                            📅 Расписание
+                        </a>
+                        <a href="{% url 'home' %}" class="btn btn-outline" style="justify-content: center;">
+                            🏠 На главную
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const priceSlider = document.getElementById('price-slider');
+            const priceValue = document.getElementById('price-value');
+            
+            priceSlider.addEventListener('input', function() {
+                const value = parseInt(this.value).toLocaleString();
+                priceValue.textContent = value;
+            });
+
+            const classOptions = document.querySelectorAll('.class-option');
+            const seatClassInput = document.getElementById('seat-class-input');
+            
+            classOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    classOptions.forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                    seatClassInput.value = this.dataset.value;
+                });
+                
+                if (option.dataset.value === seatClassInput.value) {
+                    option.classList.add('selected');
+                }
+            });
+
+            const departureInput = document.getElementById('departure-input');
+            const arrivalInput = document.getElementById('arrival-input');
+            const departureSuggestions = document.getElementById('departure-suggestions');
+            const arrivalSuggestions = document.getElementById('arrival-suggestions');
+
+            function fetchAirports(query, suggestionsElement) {
+                if (query.length < 2) {
+                    suggestionsElement.style.display = 'none';
+                    return;
+                }
+
+                fetch(`/search-airports/?q=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        suggestionsElement.innerHTML = '';
+                        if (data.airports && data.airports.length > 0) {
+                            data.airports.forEach(airport => {
+                                const item = document.createElement('div');
+                                item.className = 'suggestion-item';
+                                item.textContent = `${airport.city} (${airport.code}) - ${airport.name}`;
+                                item.addEventListener('click', function() {
+                                    if (suggestionsElement === departureSuggestions) {
+                                        departureInput.value = airport.city;
+                                    } else {
+                                        arrivalInput.value = airport.city;
+                                    }
+                                    suggestionsElement.style.display = 'none';
+                                });
+                                suggestionsElement.appendChild(item);
+                            });
+                            suggestionsElement.style.display = 'block';
+                        } else {
+                            suggestionsElement.style.display = 'none';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching airports:', error);
+                        suggestionsElement.style.display = 'none';
+                    });
+            }
+
+            departureInput.addEventListener('input', function() {
+                fetchAirports(this.value, departureSuggestions);
+            });
+
+            arrivalInput.addEventListener('input', function() {
+                fetchAirports(this.value, arrivalSuggestions);
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.input-with-suggestions')) {
+                    departureSuggestions.style.display = 'none';
+                    arrivalSuggestions.style.display = 'none';
+                }
+            });
+
+            const today = new Date().toISOString().split('T')[0];
+            const dateInputs = document.querySelectorAll('input[type="date"]');
+            dateInputs.forEach(input => {
+                input.min = today;
+            });
+
+            const form = document.querySelector('form');
+            form.addEventListener('submit', function(e) {
+                const departure = departureInput.value.trim();
+                const arrival = arrivalInput.value.trim();
+                
+                if (!departure && !arrival) {
+                    if (!confirm('Вы не указали города вылета и прилета. Показать все рейсы?')) {
+                        e.preventDefault();
+                    }
+                }
+            });
+
+            if (priceSlider && priceValue) {
+                const initialValue = parseInt(priceSlider.value).toLocaleString();
+                priceValue.textContent = initialValue;
+            }
+        });
+
+        function simulateAirportSearch(query) {
+            const airports = [
+                { city: 'Москва', code: 'MOW', name: 'Шереметьево' },
+                { city: 'Москва', code: 'MOW', name: 'Домодедово' },
+                { city: 'Москва', code: 'MOW', name: 'Внуково' },
+                { city: 'Санкт-Петербург', code: 'LED', name: 'Пулково' },
+                { city: 'Новосибирск', code: 'OVB', name: 'Толмачево' },
+                { city: 'Екатеринбург', code: 'SVX', name: 'Кольцово' },
+                { city: 'Сочи', code: 'AER', name: 'Адлер' },
+                { city: 'Краснодар', code: 'KRR', name: 'Пашковский' },
+            ];
+            
+            return airports.filter(airport => 
+                airport.city.toLowerCase().includes(query.toLowerCase()) ||
+                airport.name.toLowerCase().includes(query.toLowerCase()) ||
+                airport.code.toLowerCase().includes(query.toLowerCase())
+            );
+        }
+    </script>
+</body>
+</html>

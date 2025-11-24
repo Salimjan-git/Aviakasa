@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+
+{% block title %}Бронирование #{{ booking.id }} - AviaKasa{% endblock %}
+
+{% block main %}
+<div class="booking-detail">
+    <h1>Бронирование #{{ booking.id }}</h1>
+    
+    <div class="detail-card">
+        <div class="detail-section">
+            <h3>Информация о бронировании</h3>
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <strong>Статус:</strong>
+                    <span class="status {{ booking.status }}">{{ booking.status }}</span>
+                </div>
+                <div class="detail-item">
+                    <strong>Дата создания:</strong>
+                    <span>{{ booking.created_at|date:"d M Y H:i" }}</span>
+                </div>
+                <div class="detail-item">
+                    <strong>Общая стоимость:</strong>
+                    <span>{{ booking.total_price }} ₽</span>
+                </div>
+            </div>
+        </div>
+
+        {% if tickets %}
+        <div class="detail-section">
+            <h3>Билеты</h3>
+            {% for ticket in tickets %}
+            <div class="ticket-card">
+                <div class="ticket-header">
+                    <h4>Билет #{{ ticket.id }}</h4>
+                </div>
+                <div class="ticket-details">
+                    <p><strong>Пассажир:</strong> {{ ticket.passenger_name }}</p>
+                    <p><strong>Паспорт:</strong> {{ ticket.passport_number }}</p>
+                    <p><strong>Рейс:</strong> {{ ticket.flight.flight_number }}</p>
+                    <p><strong>Маршрут:</strong> {{ ticket.flight.departure_airport.city }} → {{ ticket.flight.arrival_airport.city }}</p>
+                    <p><strong>Стоимость:</strong> {{ ticket.price }} ₽</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="actions">
+            <a href="{% url 'my_bookings' %}" class="btn btn-secondary">Назад</a>
+            {% if booking.status == 'pending' %}
+                <a href="{% url 'make_payment' booking.id %}" class="btn btn-primary">Оплатить</a>
+                <a href="{% url 'cancel_booking' booking.id %}" class="btn btn-danger">Отменить</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.booking-detail {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.detail-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.detail-section {
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid #f8f9fa;
+}
+
+.detail-section:last-child {
+    border-bottom: none;
+}
+
+.detail-section h3 {
+    color: #1e3c72;
+    margin-bottom: 1rem;
+}
+
+.detail-grid {
+    display: grid;
+    gap: 1rem;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.8rem 0;
+}
+
+.status {
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.status.confirmed { background: #d4edda; color: #155724; }
+.status.pending { background: #fff3cd; color: #856404; }
+.status.cancelled { background: #f8d7da; color: #721c24; }
+
+.ticket-card {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+}
+
+.ticket-header h4 {
+    margin: 0 0 1rem 0;
+    color: #1e3c72;
+}
+
+.actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.btn {
+    padding: 0.8rem 1.5rem;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-primary { background: #1e3c72; color: white; }
+.btn-secondary { background: #6c757d; color: white; }
+.btn-danger { background: #dc3545; color: white; }
+
+.btn:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+}
+</style>
+{% endblock %}

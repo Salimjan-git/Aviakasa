@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block title %}Поиск аэропортов - AviaKasa{% endblock %}
+
+{% block main %}
+<div class="airports-container">
+    <h1>Поиск аэропортов</h1>
+    
+    <form method="get" class="search-form">
+        <input type="text" name="q" value="{{ query }}" placeholder="Введите название аэропорта или города..." required>
+        <button type="submit" class="btn btn-primary">Найти</button>
+    </form>
+
+    {% if airports %}
+    <div class="airports-list">
+        <h2>Найденные аэропорты</h2>
+        {% for airport in airports %}
+        <div class="airport-card">
+            <h3>{{ airport.name }}</h3>
+            <div class="airport-info">
+                <p><strong>Город:</strong> {{ airport.city }}</p>
+                <p><strong>Страна:</strong> {{ airport.country }}</p>
+                <p><strong>Код:</strong> {{ airport.code }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% elif query %}
+    <div class="no-results">
+        <p>Аэропорты не найдены</p>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.airports-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.search-form {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.search-form input {
+    flex: 1;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+.btn {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background: #1e3c72;
+    color: white;
+}
+
+.airport-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    margin-bottom: 1rem;
+}
+
+.airport-card h3 {
+    color: #1e3c72;
+    margin-bottom: 1rem;
+}
+
+.airport-info p {
+    margin-bottom: 0.5rem;
+}
+
+.no-results {
+    text-align: center;
+    padding: 3rem;
+    color: #666;
+}
+</style>
+{% endblock %}
