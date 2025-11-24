@@ -108,32 +108,41 @@ AviaKasa - Поиск авиабилетов
         </div>
     </div>
 </div>
-
 <div class="popular-routes">
     <div class="container">
-        <h2 class="section-title">Популярные направления</h2>
-        <div class="routes-grid">
-            {% for flight in popular_flights %}
-            <div class="route-card" onclick="location.href='{% url 'flight_detail' flight.id %}'">
-                <div class="route-image"></div>
-                <div class="route-info">
-                    <h3>{{ flight.departure_airport.city }} → {{ flight.arrival_airport.city }}</h3>
-                    <p class="route-price">от {{ flight.base_price }} ₽</p>
-                    <span class="route-duration">Рейс {{ flight.flight_number }}</span>
-                    <div class="route-actions">
-                        <a href="{% url 'flight_detail' flight.id %}" class="route-btn">Подробнее</a>
-                        <a href="{% url 'book_flight' flight.id %}" class="route-btn primary">Забронировать</a>
-                    </div>
-                </div>
+        <h2 style="color: white;" class="section-title">Популярные направления</h2>
+<div class="routes-grid">
+    {% for flight in flights %}
+    <div class="route-card" onclick="location.href='{% url 'flight_detail' flight.id %}'">
+        <div class="route-image" style="background-image: url('{{ flight.airline_id.logo.url }}')"></div>
+
+        <div class="route-info">
+            <h3>{{ flight.departure_airport.city }} → {{ flight.arrival_airport.city }}</h3>
+
+            <p class="route-price">от {{ flight.base_price }} ₽</p>
+
+            <span class="route-duration">
+                {{ flight.airline_id.name }} • {{ flight.aircraft_id.model_plane }}
+            </span>
+
+            <div class="route-actions">
+                <a href="{% url 'flight_detail' flight.id %}" class="route-btn">
+                    Подробнее
+                </a>
+                <a href="{% url 'book_flight' flight.id %}" class="route-btn primary">
+                    Забронировать
+                </a>
             </div>
-            {% empty %}
-            <div class="no-flights">
-                <p>Популярные рейсы не найдены</p>
-            </div>
-            {% endfor %}
         </div>
     </div>
+
+    {% empty %}
+    <div class="no-flights">
+        <p>Рейсы не найдены</p>
+    </div>
+    {% endfor %}
 </div>
+
 
 <div class="user-section">
     <div class="container">
@@ -173,10 +182,10 @@ AviaKasa - Поиск авиабилетов
                 <h3>Для администраторов</h3>
                 {% if user.is_staff %}
                 <div class="admin-actions">
-                    <a href="{% url 'admin_dashboard' %}" class="admin-btn">Админ панель</a>
-                    <a href="{% url 'admin_flight_search' %}" class="admin-btn">Управление рейсами</a>
-                    <a href="{% url 'admin_booking_search' %}" class="admin-btn">Бронирования</a>
-                    <a href="{% url 'admin_revenue_analysis' %}" class="admin-btn">Отчёты</a>
+                    <a href="#" class="admin-btn">Админ панель</a>
+                    <a href="#" class="admin-btn">Управление рейсами</a>
+                    <a href="#" class="admin-btn">Бронирования</a>
+                    <a href="#" class="admin-btn">Отчёты</a>
                 </div>
                 {% else %}
                 <p>Требуются права администратора</p>
@@ -192,7 +201,7 @@ AviaKasa - Поиск авиабилетов
         <div class="tools-grid">
             <div class="tool-card">
                 <h3>🔍 Поиск аэропортов</h3>
-                <form method="get" action="{% url 'search_airports' %}" class="tool-form">
+                <form method="get" action="#" class="tool-form">
                     <input type="text" name="q" placeholder="Название аэропорта или города">
                     <button type="submit">Найти</button>
                 </form>
@@ -201,7 +210,7 @@ AviaKasa - Поиск авиабилетов
             <div class="tool-card">
                 <h3>💰 Сравнение цен</h3>
                 <p>Найдите самые дешёвые рейсы по вашему маршруту</p>
-                <a href="{% url 'cheapest_flights' %}" class="tool-btn">Сравнить цены</a>
+                <a href="#" class="tool-btn">Сравнить цены</a>
             </div>
             
             <div class="tool-card">
@@ -224,22 +233,22 @@ AviaKasa - Поиск авиабилетов
 
             <div class="tool-card">
                 <h3>✈️ Статус рейса</h3>
-                <form method="get" action="{% url 'flight_status' %}" class="tool-form">
+                <form method="get" action="#" class="tool-form">
                     <input type="text" name="flight_number" placeholder="Номер рейса">
-                    <button type="submit">Проверить</button>
+                    <button type="submit">Найти</button>
                 </form>
             </div>
 
             <div class="tool-card">
                 <h3>📅 Расписание</h3>
                 <p>Посмотрите расписание всех рейсов</p>
-                <a href="{% url 'flight_schedule' %}" class="tool-btn">Открыть расписание</a>
+                <a href="#" class="tool-btn">Открыть расписание</a>
             </div>
 
             <div class="tool-card">
                 <h3>🔎 Расширенный поиск</h3>
                 <p>Расширенные фильтры для точного поиска</p>
-                <a href="{% url 'advanced_search' %}" class="tool-btn">Расширенный поиск</a>
+                <a href="#" class="tool-btn">Расширенный поиск</a>
             </div>
         </div>
     </div>
@@ -253,7 +262,7 @@ AviaKasa - Поиск авиабилетов
             <div class="airline-card">
                 <h4>{{ airline.name }}</h4>
                 <p>Код: {{ airline.code }}</p>
-                <a href="{% url 'airline_flights' airline.id %}" class="airline-btn">Рейсы</a>
+                <a href="#" class="airline-btn">Рейсы</a>
             </div>
             {% empty %}
             <div class="no-airlines">
@@ -263,6 +272,7 @@ AviaKasa - Поиск авиабилетов
         </div>
     </div>
 </div>
+
 
 <style>
     .hero-section {

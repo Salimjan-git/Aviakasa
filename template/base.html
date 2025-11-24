@@ -231,12 +231,12 @@
             
             <div class="nav-links">
                 <a href="{% url 'home' %}" class="nav-link">Главная</a>
-                <a href="{% url 'search_flights' %}" class="nav-link">Поиск рейсов</a>
-                <a href="{% url 'flight_schedule' %}" class="nav-link">Расписание</a>
+                <a href="#" class="nav-link">Поиск рейсов</a>
+                <a href="#" class="nav-link">Расписание</a>
                 
                 {% if user.is_authenticated %}
-                    <a href="{% url 'my_bookings' %}" class="nav-link">Мои бронирования</a>
-                    <a href="{% url 'user_dashboard' %}" class="nav-link">Дашборд</a>
+                    <a href="#" class="nav-link">Мои бронирования</a>
+                    <a href="#" class="nav-link">Дашборд</a>
                     {% if user.is_staff %}
                         <a href="{% url 'admin_dashboard' %}" class="nav-link">Админ</a>
                     {% endif %}
