@@ -4,7 +4,7 @@
 
 {% block main %}
 <div class="booking-container">
-    <h1>Бронирование рейса</h1>
+    <h1 style="color: white; margin-bottom: 20px;">Бронирование рейса</h1>
     
     <div class="flight-summary">
         <h3>Рейс {{ flight.flight_number }}</h3>
@@ -29,7 +29,7 @@
             <select name="seat_id" required>
                 <option value="">Выберите место</option>
                 {% for seat in seats %}
-                    <option value="{{ seat.id }}">{{ seat.seat_number }} ({{ seat.seat_class }})</option>
+                    <option value="{{ seat.id }}">{{ seat.seat_number }}</option>
                 {% endfor %}
             </select>
         </div>

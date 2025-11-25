@@ -8,7 +8,8 @@ from django.utils import timezone
 def home(request):
     if request.user.is_authenticated:
         flights = Flights.objects.all()
-        return render(request, 'home.html', context={"flights": flights})
+        airlines = Airline.objects.all()
+        return render(request, 'home.html', context={"flights": flights, "airlines": airlines})
     else:
         return redirect('login')
 
